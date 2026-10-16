@@ -1,0 +1,201 @@
+.intro-play-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 10px 16px;
+    border: 1px solid rgba(100, 229, 255, 0.35);
+    border-radius: 999px;
+    background: rgba(100, 229, 255, 0.07);
+    color: inherit;
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background 180ms ease,
+        border-color 180ms ease,
+        transform 180ms ease,
+        box-shadow 180ms ease;
+}
+
+.intro-play-button:hover {
+    transform: translateY(-2px);
+    border-color: #64E5FF;
+    background: rgba(100, 229, 255, 0.14);
+    box-shadow: 0 0 22px rgba(100, 229, 255, 0.12);
+}
+
+.intro-play-button:focus-visible,
+.intro-video-overlay button:focus-visible {
+    outline: 3px solid #64E5FF;
+    outline-offset: 4px;
+}
+
+.intro-play-icon {
+    display: grid;
+    width: 25px;
+    height: 25px;
+    flex-shrink: 0;
+    place-items: center;
+    padding-left: 2px;
+    border: 1px solid rgba(100, 229, 255, 0.6);
+    border-radius: 50%;
+    color: #64E5FF;
+    font-size: 10px;
+    transition: transform 180ms ease;
+}
+
+.intro-play-button:hover .intro-play-icon {
+    transform: scale(1.1);
+}
+
+.intro-video-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #000;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.intro-video-overlay.is-open {
+    display: flex;
+    visibility: visible;
+    opacity: 1;
+    animation: intro-overlay-in 350ms ease-out both;
+}
+
+.intro-video-overlay.is-closing {
+    display: flex;
+    visibility: visible;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 250ms ease;
+}
+
+.intro-video-player {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    object-fit: contain;
+    background: #000;
+}
+
+.intro-video-close {
+    position: absolute;
+    top: max(18px, env(safe-area-inset-top));
+    right: max(18px, env(safe-area-inset-right));
+    z-index: 2;
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 50%;
+    background: rgba(10, 15, 25, 0.72);
+    color: white;
+    font-size: 21px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition:
+        background 180ms ease,
+        transform 180ms ease;
+}
+
+.intro-video-close:hover {
+    transform: rotate(90deg);
+    background: rgba(50, 65, 90, 0.9);
+}
+
+.intro-video-bottom-controls {
+    position: absolute;
+    right: 24px;
+    bottom: max(65px, calc(env(safe-area-inset-bottom) + 45px));
+    z-index: 2;
+    pointer-events: none;
+}
+
+.intro-skip-button {
+    padding: 10px 17px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 999px;
+    background: rgba(10, 15, 25, 0.75);
+    color: white;
+    font: inherit;
+    font-size: 0.83rem;
+    font-weight: 700;
+    cursor: pointer;
+    pointer-events: auto;
+    backdrop-filter: blur(12px);
+    transition:
+        background 180ms ease,
+        border-color 180ms ease;
+}
+
+.intro-skip-button:hover {
+    border-color: #64E5FF;
+    background: rgba(20, 38, 58, 0.95);
+}
+
+.intro-video-status {
+    position: absolute;
+    right: 24px;
+    bottom: 20px;
+    left: 24px;
+    z-index: 2;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.8rem;
+    text-align: center;
+    pointer-events: none;
+}
+
+.intro-video-status:empty {
+    display: none;
+}
+
+@keyframes intro-overlay-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@media (max-width: 600px) {
+    .intro-play-label {
+        font-size: 0.8rem;
+    }
+
+    .intro-video-close {
+        top: max(12px, env(safe-area-inset-top));
+        right: max(12px, env(safe-area-inset-right));
+    }
+
+    .intro-video-bottom-controls {
+        right: 14px;
+        bottom: max(60px, calc(env(safe-area-inset-bottom) + 40px));
+    }
+
+    .intro-video-status {
+        right: 12px;
+        bottom: 12px;
+        left: 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .intro-video-overlay.is-open {
+        animation: none;
+    }
+
+    .intro-play-button,
+    .intro-video-close,
+    .intro-skip-button {
+        transition: none;
+    }
+}

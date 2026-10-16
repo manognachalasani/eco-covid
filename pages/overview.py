@@ -1,16 +1,39 @@
 from dash import html, dcc
 from src.visualizations import growth_line, sector_bars, metric_card
 
-layout = html.Div([
+layout = html.Div ([
     html.Section([
         html.Div([
             html.Span("✨ AN INTERACTIVE LEARNING JOURNEY", className="tag"),
             html.H1("How did a virus reshape the global economy?"),
             html.P("In 2020, the world slowed down almost overnight. Explore what happened to growth, jobs, industries and trade — one interactive chart at a time."),
-            html.Div([
-                dcc.Link("Start the journey →", href="/economic-impact", className="btn"),
-                dcc.Link("How to read data wisely", href="/pandemic-analysis", className="btn btn-ghost"),
-            ], className="hero-actions")
+            
+html.Div([
+    dcc.Link(
+        "Start the journey →",
+        href="/economic-impact",
+        className="btn",
+    ),
+
+    html.Button(
+        [
+            html.Span("▶", className="intro-play-icon"),
+            html.Span("Watch introduction", className="intro-play-label"),
+        ],
+        id="open-intro-video",
+        className="intro-play-button",
+        type="button",
+        title="Play the website introduction",
+        **{"aria-label": "Play the website introduction video"},
+    ),
+
+    dcc.Link(
+        "How to read data wisely",
+        href="/pandemic-analysis",
+        className="btn btn-ghost",
+    ),
+], className="hero-actions")
+
         ], className="container hero-content")
     ], className="hero hero-home"),
     html.Div([
@@ -47,4 +70,60 @@ layout = html.Div([
             ], className="callout callout-green")
         ], className="container split")
     ], className="section section-muted"),
+
+
+    # Full-screen introduction video overlay
+    html.Div(
+        [
+            html.Video(
+                id="intro-video-player",
+                src="/assets/intro.mp4",
+                controls=True,
+                autoPlay=False,
+                muted=False,
+                preload="auto",
+                playsInline=True,
+                className="intro-video-player",
+                **{
+                    "aria-label": "Introduction to the COVID-19 economic impact website",
+                },
+            ),
+
+            html.Div(
+                [
+                    html.Button(
+                        "Skip intro →",
+                        id="skip-intro-video",
+                        className="intro-skip-button",
+                        type="button",
+                    ),
+                ],
+                className="intro-video-bottom-controls",
+            ),
+
+            html.Button(
+                "✕",
+                id="close-intro-video",
+                className="intro-video-close",
+                type="button",
+                title="Close introduction",
+                **{"aria-label": "Close introduction video"},
+            ),
+
+            html.Div(
+                "If playback does not start, press play on the video.",
+                id="intro-video-status",
+                className="intro-video-status",
+                role="status",
+                **{"aria-live": "polite"},
+            ),
+        ],
+        id="intro-video-overlay",
+        className="intro-video-overlay",
+        **{
+            "aria-label": "Website introduction video",
+            "aria-hidden": "true",
+        },
+    ),
+
 ])
