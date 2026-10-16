@@ -753,45 +753,118 @@ html.Div(
             section_id="industry-impact",
         ),
 
-        # CLOSING — STORY SUMMARY / TRANSITION
-        html.Section([
-            html.Div([
-                html.P("CHAPTER 02 · THE TAKEAWAY", className="chapter-kicker"),
-                html.H2([
-                    html.Span("One crisis.", className="closing-line"),
-                    html.Span("Many economic realities.", className="closing-line title-accent"),
-                ], className="closing-title"),
-                html.P(
-                    "The global shock provides the starting point, not "
-                    "the whole story. To understand its lasting economic "
-                    "impact, we must compare the depth of contraction, "
-                    "the pace of recovery and the industries behind the totals.",
-                    className="closing-description",
-                ),
-                html.Div([
-                    html.Div([
-                        html.Span("01", className="closing-number"),
-                        html.P("Measure the shock"),
-                    ]),
-                    html.Div([
-                        html.Span("02", className="closing-number"),
-                        html.P("Compare countries"),
-                    ]),
-                    html.Div([
-                        html.Span("03", className="closing-number"),
-                        html.P("Trace recovery"),
-                    ]),
-                    html.Div([
-                        html.Span("04", className="closing-number"),
-                        html.P("Uncover sector differences"),
-                    ]),
-                ], className="closing-steps"),
+        # CLOSING — STORY SUMMARY / TRANSITION TO CHAPTER 3
+        html.Section(
+            [
                 html.Div(
-                    "NEXT CHAPTER  /  FROM SHOCK TO RECOVERY  →",
-                    className="next-chapter-label",
+                    [
+                        html.P(
+                            "CHAPTER 02 · THE TAKEAWAY",
+                            className="chapter-kicker",
+                        ),
+                        html.H2(
+                            [
+                                html.Span("One crisis.", className="closing-line"),
+                                html.Span(
+                                    "Many economic realities.",
+                                    className="closing-line title-accent",
+                                ),
+                            ],
+                            className="closing-title",
+                        ),
+                        html.P(
+                            "The global shock provides the starting point, not "
+                            "the whole story. To understand its lasting economic "
+                            "impact, we must compare the depth of contraction, "
+                            "the pace of recovery and the industries behind the totals.",
+                            className="closing-description",
+                        ),
+
+                        # Four key takeaways
+                        html.Div(
+                            [
+                                html.Div(
+                                    [
+                                        html.Span("01", className="closing-number"),
+                                        html.P("Measure the shock"),
+                                    ],
+                                    className="closing-step",
+                                ),
+                                html.Div(
+                                    [
+                                        html.Span("02", className="closing-number"),
+                                        html.P("Compare countries"),
+                                    ],
+                                    className="closing-step",
+                                ),
+                                html.Div(
+                                    [
+                                        html.Span("03", className="closing-number"),
+                                        html.P("Trace recovery"),
+                                    ],
+                                    className="closing-step",
+                                ),
+                                html.Div(
+                                    [
+                                        html.Span("04", className="closing-number"),
+                                        html.P("Uncover sector differences"),
+                                    ],
+                                    className="closing-step",
+                                ),
+                            ],
+                            className="closing-steps",
+                        ),
+
+                        # Transition card: link is a child, not an argument
+                        # of the next-chapter-label Div.
+                        html.Div(
+                            [
+                                html.Div(
+                                    [
+                                        html.Span(
+                                            "NEXT CHAPTER",
+                                            className="transition-eyebrow",
+                                        ),
+                                        html.Span(
+                                            "03",
+                                            className="transition-number",
+                                        ),
+                                    ],
+                                    className="transition-topline",
+                                ),
+                                html.H3(
+                                    "From economic shock to human impact.",
+                                    className="transition-title",
+                                ),
+                                html.P(
+                                    "GDP tells us what happened to the economy. "
+                                    "Employment brings us closer to the people "
+                                    "who lived through it.",
+                                    className="transition-description",
+                                ),
+                                dcc.Link(
+                                    [
+                                        html.Span(
+                                            "Continue to Chapter 3",
+                                            className="transition-button-text",
+                                        ),
+                                        html.Span(
+                                            "→",
+                                            className="transition-button-arrow",
+                                        ),
+                                    ],
+                                    href="/employment",
+                                    className="transition-button",
+                                ),
+                            ],
+                            className="chapter-transition",
+                        ),
+                    ],
+                    className="closing-inner",
                 ),
-            ], className="closing-inner"),
-        ], className="chapter-closing reveal"),
+            ],
+            className="chapter-closing reveal",
+        ),
     ],
 )
 
