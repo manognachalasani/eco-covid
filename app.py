@@ -15,6 +15,7 @@ from pages import (
     trade_tourism,
     government_response,
     pandemic_analysis,
+     pandemic_response,
     recovery,
     data_methodology,
 )
@@ -39,6 +40,7 @@ PAGE_REGISTRY = [
     {"key": "trade-tourism", "label": "Trade & Tourism", "path": "/trade-tourism", "layout": trade_tourism.layout, "group": "Economic Impact"},
     {"key": "pandemic-analysis", "label": "Pandemic & Economy", "path": "/pandemic-analysis", "layout": pandemic_analysis.layout, "group": "Analysis & Recovery"},
     {"key": "government-response", "label": "Government Response", "path": "/government-response", "layout": government_response.layout, "group": "Analysis & Recovery"},
+    {"key": "pandemic-response","label": "Pandemic & Policy","path": "/pandemic-response","layout": pandemic_response.layout,"group": "Analysis & Recovery",},
     {"key": "recovery", "label": "Recovery", "path": "/recovery", "layout": recovery.layout, "group": "Analysis & Recovery"},
     {"key": "data-methodology", "label": "Data & Methodology", "path": "/data-methodology", "layout": data_methodology.layout, "group": "About the Data"},
 ]
