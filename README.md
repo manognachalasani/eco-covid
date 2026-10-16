@@ -1,33 +1,6 @@
 # PandemiScope · The Economics of COVID-19
 
-A multi-page Plotly Dash mock dashboard for the CentraleDigitalLab Data Storytelling project.
-
-## Project structure
-
-```text
-covid-economic-impact/
-├── app.py
-├── pages/
-│   ├── overview.py
-│   ├── economic_impact.py
-│   ├── pandemic_analysis.py
-│   └── recovery.py
-├── src/
-│   ├── data_processing.py
-│   ├── analysis.py
-│   ├── visualizations.py
-│   └── callbacks.py
-├── data/
-│   ├── raw/
-│   └── processed/
-├── notebooks/
-│   └── exploratory_analysis.ipynb
-├── assets/
-│   └── style.css
-├── requirements.txt
-├── .gitignore
-└── README.md
-```
+A multi-page Plotly Dash project for exploring the economic impact of COVID-19. The current application combines existing illustrative dashboard pages with minimal scaffolds for the planned ten-page architecture.
 
 ## Run locally
 
@@ -56,36 +29,37 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Open the local URL shown in the terminal, usually `http://127.0.0.1:8050`.
+Open `http://127.0.0.1:8050`.
 
-## Pages and responsibilities
+## Page architecture
 
-- **Overview:** project landing page, headline placeholder metrics and navigation.
-- **Economic impact:** GDP line chart, year snapshot slider and sector filter.
-- **Pandemic analysis:** unemployment comparison, trade index and fiscal support.
-- **Recovery:** recovery index, sector recovery comparison and takeaway preview.
-- **`src/visualizations.py`:** chart factories and clearly marked mock arrays.
-- **`src/callbacks.py`:** callbacks that update charts and preview text.
-- **`src/data_processing.py`:** future data-loading and cleaning entry points.
-- **`src/analysis.py`:** intentional scaffold for future analysis.
-- **`assets/style.css`:** shared styling for all pages.
-- **`notebooks/exploratory_analysis.ipynb`:** exploratory analysis scaffold.
+| Page | File | Responsibility |
+|---|---|---|
+| Overview | `pages/overview.py` | Introduce the project and summarize the story |
+| Country Explorer | `pages/country_explorer.py` | Explore and compare countries |
+| Economic Impact | `pages/economic_impact.py` | GDP and broader economic indicators |
+| Employment & Inequality | `pages/employment.py` | Labor-market effects and group differences |
+| Sector Impact | `pages/sector_impact.py` | Compare the shock across industries |
+| Trade & Tourism | `pages/trade_tourism.py` | International trade and tourism disruption |
+| Pandemic & Economy | `pages/pandemic_analysis.py` | Explore pandemic timing and economic indicators |
+| Government Response | `pages/government_response.py` | Economic support measures and policy context |
+| Recovery | `pages/recovery.py` | Compare recovery paths and remaining gaps |
+| Data & Methodology | `pages/data_methodology.py` | Document sources, definitions and limitations |
 
-## Important data disclaimer
+Navigation is grouped into Discover, Economic Impact, Analysis & Recovery, and About the Data. The shared country and date controls in `app.py` currently save their selections to `dcc.Store(id="global-filters")`. Relevant charts will be connected to this shared state as each page is developed.
 
-**All numeric values currently used by charts and metric cards are illustrative placeholders. They are not validated observations and must not be presented as findings.** Once you select the datasets, replace the mock arrays in `src/visualizations.py` with data-driven chart functions, and update labels, units, sources and limitations.
+## Code organization
 
-## Suggested data workflow (future work)
+- `app.py`: application setup, routes, grouped navigation and shared filters.
+- `pages/`: page layouts; each page exposes a `layout()` function.
+- `src/visualizations.py`: existing Plotly chart factories and mock data.
+- `src/callbacks.py`: existing chart interactions and callbacks.
+- `src/data_processing.py`: future data-loading and cleaning functions.
+- `src/analysis.py`: future analysis functions.
+- `assets/style.css`: shared visual styling.
+- `data/raw/` and `data/processed/`: intended locations for raw and processed data.
+- `notebooks/exploratory_analysis.ipynb`: exploratory analysis scaffold.
 
-1. Keep downloaded originals in `data/raw/`.
-2. Document source URLs, retrieval dates, definitions, units and coverage.
-3. Clean and harmonize into `data/processed/`.
-4. Implement checks in `src/data_processing.py`.
-5. Implement descriptive statistics and analysis in `src/analysis.py`.
-6. Update chart factories in `src/visualizations.py` to consume processed data.
-7. Keep UI callbacks in `src/callbacks.py` rather than embedding them in page modules.
-8. Cite data sources on the relevant page and explain limitations.
+## Current status and data disclaimer
 
-## Architecture note
-
-This structure separates **page layouts**, **visualization factories**, **callbacks**, and the future **data/analysis pipeline**. It is a practical fit for a student Dash project. If the app grows substantially, consider adding `src/config.py`, `src/data_repository.py`, tests and a database layer.
+The new pages are intentionally structural placeholders. Their TODO comments describe future content; they do not yet contain complete charts or analyses. Existing chart and KPI values in the original pages are illustrative placeholders, not verified findings. Replace them with sourced observations and show definitions, units and limitations before presenting conclusions.
