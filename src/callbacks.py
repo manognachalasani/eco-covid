@@ -42,7 +42,7 @@ def register_callbacks(app):
     )
     def toggle_theme(n, current):
         if not n:
-            return current or "theme-light"
+            return current or "theme-dark"
 
         return (
             "theme-dark"

@@ -49,7 +49,7 @@ NAV_GROUPS = ["Discover", "Economic Impact", "Analysis & Recovery", "About the D
 
 
 def build_navigation():
-    """Create grouped dropdown navigation, keeping all routes discoverable."""
+    """Create grouped dropdown navigation; assets/navigation-dropdowns.js manages closing behavior."""
     groups = []
     for group_name in NAV_GROUPS:
         links = [
@@ -66,7 +66,6 @@ def build_navigation():
             html.Details(
                 [html.Summary(group_name, className="nav-group-label"), html.Div(links, className="nav-dropdown")],
                 className="nav-group",
-                open=(group_name == "Discover"),
             )
         )
     return html.Nav(groups, className="nav-links", **{"aria-label": "Main navigation"})
@@ -96,54 +95,6 @@ app.layout = html.Div(
         ),
         # Shared controls are visible across the site. They store selections now;
         # individual page charts will connect to these values in later development.
-        html.Section(
-            [
-                html.Div(
-                    [
-                        html.Div(
-                            [
-                                html.Label("Countries / regions", htmlFor="global-country-filter"),
-                                dcc.Dropdown(
-                                    id="global-country-filter",
-                                    options=[
-                                        {"label": name, "value": name}
-                                        for name in ["World", "France", "United States", "Euro area", "China", "India", "Germany", "United Kingdom"]
-                                    ],
-                                    value=["World", "France", "United States"],
-                                    multi=True,
-                                    clearable=True,
-                                    placeholder="Choose countries or regions",
-                                ),
-                            ],
-                            className="global-filter-field global-filter-countries",
-                        ),
-                        html.Div(
-                            [
-                                html.Label("Time period", htmlFor="global-date-filter"),
-                                dcc.Dropdown(
-                                    id="global-date-filter",
-                                    options=[
-                                        {"label": "Full period (2019–2023)", "value": "2019:2023"},
-                                        {"label": "Pre-pandemic baseline (2019)", "value": "2019:2019"},
-                                        {"label": "Initial shock (2020–2021)", "value": "2020:2021"},
-                                        {"label": "Recovery period (2022–2023)", "value": "2022:2023"},
-                                    ],
-                                    value="2019:2023",
-                                    clearable=False,
-                                ),
-                            ],
-                            className="global-filter-field",
-                        ),
-                        html.P(
-                            "Shared selections are saved for relevant pages. Charts will be connected to these filters as each page is developed.",
-                            className="global-filter-note",
-                        ),
-                    ],
-                    className="global-filter-wrap",
-                )
-            ],
-            className="global-filter-bar",
-        ),
         html.Main(id="page-content"),
         html.Footer(
             [
@@ -161,6 +112,7 @@ app.layout = html.Div(
         html.Div(id="toast", className="toast"),
     ],
     id="app-root",
+    className="theme-dark",  # Launch in dark mode by default.
 )
 
 
@@ -183,12 +135,6 @@ def render_page(pathname):
     return [rendered_page, *active_classes]
 
 
-# Store the shared country and date choices in one predictable structure.
-@app.callback(
-    Output("global-filters", "data"),
-    Input("global-country-filter", "value"),
-    Input("global-date-filter", "value"),
-)
 def save_global_filters(countries, date_range):
     start_year, end_year = (date_range or "2019:2023").split(":", maxsplit=1)
     return {
