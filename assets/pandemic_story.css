@@ -1019,3 +1019,159 @@
         transform: none;
     }
 }
+
+
+/* ==========================================
+   COUNTRY EXPLORER
+   Scoped styles: won't affect other pages
+   ========================================== */
+
+.country-explorer-page .country-map-section {
+    padding-top: 3rem;
+    padding-bottom: 4rem;
+}
+
+.country-explorer-page .country-map-section > div {
+    background:
+        radial-gradient(
+            ellipse at 85% 0%,
+            rgba(32, 205, 181, 0.07),
+            transparent 45%
+        ),
+        rgba(12, 21, 37, 0.72);
+    border: 1px solid rgba(130, 160, 190, 0.16);
+    border-radius: 20px;
+    padding: 1.5rem 1.75rem 1rem;
+    overflow: hidden;
+}
+
+.country-explorer-page .country-map-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.country-explorer-page .country-map-kicker {
+    color: #20cdb5;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    margin-bottom: 0.65rem;
+}
+
+.country-explorer-page .country-map-title {
+    color: #f3f7ff;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    margin: 0 0 0.5rem;
+}
+
+.country-explorer-page .country-map-description {
+    color: #aab8cb;
+    max-width: 620px;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.country-explorer-page .country-map-legend {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: #b9c6d8;
+    font-size: 0.8rem;
+    padding-top: 0.25rem;
+}
+
+.country-explorer-page .country-map-legend-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #20cdb5;
+    box-shadow: 0 0 12px rgba(32, 205, 181, 0.4);
+    flex-shrink: 0;
+}
+
+.country-explorer-page .country-demo-label {
+    border: 1px solid rgba(32, 205, 181, 0.35);
+    border-radius: 5px;
+    color: #20cdb5;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 0.3rem 0.45rem;
+    margin-left: 0.5rem;
+}
+
+.country-explorer-page .country-map-graph {
+    margin-top: 1rem;
+}
+
+.country-explorer-page .country-map-footnote {
+    border-top: 1px solid rgba(130, 160, 190, 0.12);
+    color: #8494aa;
+    font-size: 0.78rem;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0.9rem 0 0.25rem;
+}
+
+@media (max-width: 600px) {
+    .country-explorer-page .country-map-section > div {
+        padding: 1.1rem 0.8rem 0.8rem;
+        border-radius: 14px;
+    }
+
+    .country-explorer-page .country-map-topbar {
+        gap: 1rem;
+    }
+
+    .country-explorer-page .country-map-legend {
+        flex-wrap: wrap;
+    }
+
+    .country-explorer-page .country-map-graph {
+        margin-left: -0.25rem;
+        margin-right: -0.25rem;
+    }
+}
+
+/* Country Explorer — globe refinements */
+.country-explorer-page .country-globe-panel {
+    overflow: hidden;
+}
+
+.country-explorer-page .country-map-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.country-explorer-page .country-map-graph {
+    width: 100%;
+}
+
+.country-explorer-page .country-map-graph .js-plotly-plot {
+    width: 100%;
+}
+
+.country-explorer-page .country-map-footnote {
+    color: #a7b2c8;
+    font-size: 0.85rem;
+    line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+    .country-explorer-page .country-map-topbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .country-explorer-page .country-map-graph {
+        height: 440px !important;
+    }
+}
