@@ -7,7 +7,7 @@ from plotly.subplots import make_subplots
 #################################
 
 YEARS = [2018, 2019, 2020, 2021, 2022, 2023]
-COLORS = {
+DEMO_COLORS = {
     "World": "#4a6cf7", "US": "#ff7a59", "Euro area": "#12b886",
     "France": "#7c3aed", "China": "#f0476b", "India": "#f59f00"
 }
@@ -51,7 +51,7 @@ def growth_line(regions=None):
     rows = [{"year": y, "region": region, "growth": GDP[region][i]}
             for region in regions if region in GDP for i, y in enumerate(YEARS)]
     fig = px.line(pd.DataFrame(rows), x="year", y="growth", color="region", markers=True,
-                  color_discrete_map=COLORS, labels={"year": "Year", "growth": "Real GDP growth (%)", "region": "Region"})
+                  color_discrete_map=DEMO_COLORS, labels={"year": "Year", "growth": "Real GDP growth (%)", "region": "Region"})
     fig.add_hline(y=0, line_dash="dash", line_color="#ff7a59", opacity=.8)
     fig.update_traces(line_width=3, marker_size=7)
     fig.update_xaxes(dtick=1)
@@ -83,7 +83,7 @@ def unemployment_line(regions=None):
     rows = [{"month": month, "region": region, "rate": UNEMPLOYMENT[region][i]}
             for region in regions if region in UNEMPLOYMENT for i, month in enumerate(MONTHS)]
     fig = px.line(pd.DataFrame(rows), x="month", y="rate", color="region", markers=True,
-                  color_discrete_map={"US": COLORS["US"], "Euro area": COLORS["Euro area"]},
+                  color_discrete_map={"US": DEMO_COLORS["US"], "Euro area": DEMO_COLORS["Euro area"]},
                   labels={"month": "", "rate": "Unemployment rate (%)", "region": ""})
     fig.update_traces(line_width=3, marker_size=5)
     return _style(fig)
@@ -93,7 +93,7 @@ def trade_line():
     values = [100, 98, 82, 94, 100, 104, 107, 108]
     fig = px.line(pd.DataFrame({"quarter": quarters, "index": values}), x="quarter", y="index",
                   markers=True, labels={"quarter": "", "index": "Trade volume index"})
-    fig.update_traces(line_color=COLORS["World"], line_width=3, marker_size=7)
+    fig.update_traces(line_color=DEMO_COLORS["World"], line_width=3, marker_size=7)
     fig.add_hline(y=100, line_dash="dash", line_color="#ff7a59")
     return _style(fig)
 
@@ -102,7 +102,7 @@ def fiscal_bars():
                       "support": [17, 16, 16, 13, 9, 7]})
     fig = px.bar(d.sort_values("support"), x="support", y="country", orientation="h",
                  labels={"support": "Illustrative support (% GDP)", "country": ""})
-    fig.update_traces(marker_color=COLORS["World"])
+    fig.update_traces(marker_color=DEMO_COLORS["World"])
     return _style(fig, 320)
 
 def recovery_line():
@@ -110,7 +110,7 @@ def recovery_line():
     values = [100, 98, 82, 94, 100, 104, 107, 108]
     d = pd.DataFrame({"quarter": quarters, "activity": values})
     fig = px.area(d, x="quarter", y="activity", labels={"quarter": "", "activity": "Illustrative activity index"})
-    fig.update_traces(line_color=COLORS["World"], fillcolor="rgba(74,108,247,.16)")
+    fig.update_traces(line_color=DEMO_COLORS["World"], fillcolor="rgba(74,108,247,.16)")
     fig.add_hline(y=100, line_dash="dash", line_color="#ff7a59")
     return _style(fig)
 
