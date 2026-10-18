@@ -1,0 +1,1538 @@
+/* ==========================================================
+
+   CHAPTER 3 — EMPLOYMENT STORY
+
+   Replace the contents of assets/employment.css with this file.
+
+   All selectors are scoped to .employment-story to avoid changing
+
+   the Overview or Chapter 2 pages.
+
+   ========================================================== */
+
+
+
+#employment-story.employment-story {
+
+    --emp-bg: #0b1020;
+
+    --emp-panel: #121a2d;
+
+    --emp-panel-soft: #172238;
+
+    --emp-text: #f4f7ff;
+
+    --emp-muted: #a7b2c8;
+
+    --emp-cyan: #64e5ff;
+
+    --emp-purple: #a99bff;
+
+    --emp-coral: #ff806e;
+
+    position: relative;
+
+    width: 100%;
+
+    background: var(--emp-bg);
+
+    color: var(--emp-text);
+
+    font-family: Inter, "Plus Jakarta Sans", system-ui, sans-serif;
+
+    line-height: 1.65;
+
+}
+
+
+
+#employment-story \*,
+
+#employment-story \*::before,
+
+#employment-story \*::after {
+
+    box-sizing: border-box;
+
+}
+
+
+
+#employment-story h1,
+
+#employment-story h2,
+
+#employment-story h3,
+
+#employment-story h4,
+
+#employment-story p {
+
+    margin-top: 0;
+
+}
+
+
+
+#employment-story p {
+
+    color: var(--emp-muted);
+
+}
+
+
+
+#employment-story .employment-container {
+
+    width: min(1160px, calc(100% - 48px));
+
+    margin-inline: auto;
+
+}
+
+
+
+/* Reading progress */
+
+#employment-story .employment-progress-track {
+
+    position: sticky;
+
+    z-index: 40;
+
+    top: 0;
+
+    width: 100%;
+
+    height: 3px;
+
+    background: rgba(167, 178, 200, 0.12);
+
+}
+
+
+
+#employment-story #employment-progress-fill {
+
+    width: 0;
+
+    height: 100%;
+
+    background: linear-gradient(90deg, var(--emp-cyan), var(--emp-purple));
+
+    box-shadow: 0 0 14px rgba(100, 229, 255, 0.5);
+
+    transition: width 100ms linear;
+
+}
+
+
+
+/* Chapter hero */
+
+#employment-story .employment-hero {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    min-height: 490px;
+
+    padding: 92px 0 84px;
+
+    overflow: hidden;
+
+    border-bottom: 1px solid rgba(167, 178, 200, 0.12);
+
+    background:
+
+        radial-gradient(ellipse at 78% 24%, rgba(102, 90, 255, 0.19), transparent 34%),
+
+        radial-gradient(ellipse at 16% 85%, rgba(100, 229, 255, 0.10), transparent 35%),
+
+        linear-gradient(135deg, #10192b 0%, #0b1020 65%);
+
+}
+
+
+
+#employment-story .employment-hero::before {
+
+    position: absolute;
+
+    inset: 0;
+
+    background-image: linear-gradient(rgba(167,178,200,.035) 1px, transparent 1px),
+
+                      linear-gradient(90deg, rgba(167,178,200,.035) 1px, transparent 1px);
+
+    background-size: 46px 46px;
+
+    mask-image: linear-gradient(to bottom, black, transparent 90%);
+
+    content: "";
+
+    pointer-events: none;
+
+}
+
+
+
+#employment-story .employment-hero-content {
+
+    position: relative;
+
+    z-index: 1;
+
+}
+
+
+
+#employment-story .employment-kicker {
+
+    margin-bottom: 15px;
+
+    color: var(--emp-cyan);
+
+    font-size: 0.76rem;
+
+    font-weight: 800;
+
+    letter-spacing: 0.17em;
+
+    line-height: 1.5;
+
+    text-transform: uppercase;
+
+}
+
+
+
+#employment-story .employment-hero-title {
+
+    max-width: 900px;
+
+    margin-bottom: 24px;
+
+    font-size: clamp(2.8rem, 7vw, 6rem);
+
+    font-weight: 850;
+
+    letter-spacing: -0.065em;
+
+    line-height: 0.99;
+
+}
+
+
+
+#employment-story .employment-title-line {
+
+    display: block;
+
+}
+
+
+
+#employment-story .employment-title-accent {
+
+    color: var(--emp-cyan);
+
+    background: linear-gradient(95deg, #64e5ff 4%, #a99bff 75%);
+
+    -webkit-background-clip: text;
+
+    background-clip: text;
+
+    -webkit-text-fill-color: transparent;
+
+}
+
+
+
+#employment-story .employment-hero-description {
+
+    max-width: 760px;
+
+    margin-bottom: 28px;
+
+    color: #c0cbde;
+
+    font-size: clamp(1rem, 1.6vw, 1.18rem);
+
+    line-height: 1.85;
+
+}
+
+
+
+#employment-story .employment-scroll-cue {
+
+    display: flex;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+
+    color: var(--emp-muted);
+
+    font-size: 0.73rem;
+
+    font-weight: 750;
+
+    letter-spacing: 0.13em;
+
+}
+
+
+
+#employment-story .employment-live-dot {
+
+    width: 8px;
+
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: var(--emp-cyan);
+
+    box-shadow: 0 0 14px rgba(100, 229, 255, .8);
+
+}
+
+
+
+#employment-story .employment-scroll-arrow {
+
+    margin-left: 8px;
+
+    color: var(--emp-cyan);
+
+    font-size: 1.1rem;
+
+}
+
+
+
+#employment-story .employment-hero-glow {
+
+    position: absolute;
+
+    right: -140px;
+
+    bottom: -260px;
+
+    width: 560px;
+
+    height: 560px;
+
+    border: 1px solid rgba(100, 229, 255, .13);
+
+    border-radius: 50%;
+
+    box-shadow: 0 0 0 55px rgba(100,229,255,.025), 0 0 0 110px rgba(100,229,255,.018);
+
+    pointer-events: none;
+
+}
+
+
+
+/* Mock-data notice */
+
+#employment-story .employment-data-note {
+
+    position: relative;
+
+    margin-top: 30px;
+
+    margin-bottom: 28px;
+
+    padding: 20px 24px;
+
+    border: 1px solid rgba(255, 189, 105, .28);
+
+    border-left: 4px solid #ffbd69;
+
+    border-radius: 12px;
+
+    background: rgba(255, 189, 105, .065);
+
+}
+
+
+
+#employment-story .employment-data-note strong {
+
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #ffd49b;
+
+    font-size: .78rem;
+
+    letter-spacing: .12em;
+
+}
+
+
+
+#employment-story .employment-data-note p {
+
+    margin-bottom: 0;
+
+    color: #c4ccda;
+
+    font-size: .91rem;
+
+    line-height: 1.75;
+
+}
+
+
+
+/* Sections and act headers */
+
+#employment-story .employment-section {
+
+    position: relative;
+
+    padding: 82px 0;
+
+}
+
+
+
+#employment-story .employment-section-alt {
+
+    border-block: 1px solid rgba(167,178,200,.08);
+
+    background: linear-gradient(180deg, rgba(20,31,51,.7), rgba(11,16,32,.85));
+
+}
+
+
+
+#employment-story .employment-section-header {
+
+    display: grid;
+
+    grid-template-columns: 54px minmax(0, 1fr);
+
+    gap: 22px;
+
+    align-items: start;
+
+    margin-bottom: 34px;
+
+}
+
+
+
+#employment-story .employment-act-number {
+
+    display: grid;
+
+    width: 48px;
+
+    height: 48px;
+
+    place-items: center;
+
+    border: 1px solid rgba(100,229,255,.35);
+
+    border-radius: 14px;
+
+    background: rgba(100,229,255,.07);
+
+    color: var(--emp-cyan);
+
+    font-size: .9rem;
+
+    font-weight: 850;
+
+}
+
+
+
+#employment-story .employment-section-title {
+
+    max-width: 900px;
+
+    margin-bottom: 15px;
+
+    color: var(--emp-text);
+
+    font-size: clamp(1.8rem, 4vw, 3.2rem);
+
+    font-weight: 800;
+
+    letter-spacing: -.045em;
+
+    line-height: 1.13;
+
+}
+
+
+
+#employment-story .employment-section-description {
+
+    max-width: 820px;
+
+    margin-bottom: 0;
+
+    color: var(--emp-muted);
+
+    font-size: 1rem;
+
+    line-height: 1.8;
+
+}
+
+
+
+/* Panels and charts */
+
+#employment-story .employment-panel {
+
+    min-width: 0;
+
+    padding: clamp(20px, 3vw, 32px);
+
+    border: 1px solid rgba(140, 164, 201, .17);
+
+    border-radius: 20px;
+
+    background: linear-gradient(145deg, rgba(20,30,49,.96), rgba(15,23,39,.96));
+
+    box-shadow: 0 16px 44px rgba(0,0,0,.13);
+
+}
+
+
+
+#employment-story .employment-mini-label {
+
+    margin-bottom: 10px;
+
+    color: var(--emp-cyan);
+
+    font-size: .72rem;
+
+    font-weight: 850;
+
+    letter-spacing: .16em;
+
+}
+
+
+
+#employment-story .employment-panel-title {
+
+    margin-bottom: 12px;
+
+    color: var(--emp-text);
+
+    font-size: clamp(1.25rem, 2.5vw, 1.8rem);
+
+    font-weight: 780;
+
+    letter-spacing: -.03em;
+
+    line-height: 1.25;
+
+}
+
+
+
+#employment-story .employment-panel-description {
+
+    max-width: 850px;
+
+    margin-bottom: 22px;
+
+    color: var(--emp-muted);
+
+    line-height: 1.75;
+
+}
+
+
+
+#employment-story .employment-panel .dash-graph {
+
+    width: 100%;
+
+    min-width: 0;
+
+}
+
+
+
+#employment-story .employment-chart-footnote {
+
+    margin: 6px 0 0;
+
+    color: #8e9bb2;
+
+    font-size: .78rem;
+
+    line-height: 1.6;
+
+}
+
+
+
+/* Dash checklist filters */
+
+#employment-story .employment-country-filter {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 9px;
+
+    margin: 18px 0 14px;
+
+}
+
+
+
+#employment-story .employment-filter-chip {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 7px 11px;
+
+    border: 1px solid rgba(140,164,201,.25);
+
+    border-radius: 999px;
+
+    background: rgba(167,178,200,.055);
+
+    color: #dce5f5;
+
+    cursor: pointer;
+
+    font-size: .82rem;
+
+    line-height: 1.4;
+
+    transition: border-color 180ms ease, background 180ms ease;
+
+}
+
+
+
+#employment-story .employment-filter-chip:hover {
+
+    border-color: rgba(100,229,255,.55);
+
+    background: rgba(100,229,255,.08);
+
+}
+
+
+
+#employment-story .employment-filter-chip input {
+
+    accent-color: var(--emp-cyan);
+
+    margin: 0;
+
+}
+
+
+
+/* Country story cards */
+
+#employment-story .employment-country-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 16px;
+
+}
+
+
+
+#employment-story .employment-country-card {
+
+    position: relative;
+
+    min-width: 0;
+
+    padding: 24px;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(140,164,201,.16);
+
+    border-radius: 17px;
+
+    background: linear-gradient(145deg, rgba(20,30,49,.95), rgba(15,23,39,.9));
+
+    transition: transform 220ms ease, border-color 220ms ease, background 220ms ease;
+
+}
+
+
+
+#employment-story .employment-country-card::before {
+
+    position: absolute;
+
+    top: 0;
+
+    left: 0;
+
+    width: 3px;
+
+    height: 100%;
+
+    background: linear-gradient(180deg, var(--emp-cyan), var(--emp-purple));
+
+    opacity: .8;
+
+    content: "";
+
+}
+
+
+
+#employment-story .employment-country-card:hover {
+
+    transform: translateY(-3px);
+
+    border-color: rgba(100,229,255,.34);
+
+    background: linear-gradient(145deg, rgba(24,39,61,.98), rgba(15,23,39,.96));
+
+}
+
+
+
+#employment-story .employment-country-header {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 9px;
+
+    margin-bottom: 14px;
+
+}
+
+
+
+#employment-story .employment-country-name {
+
+    color: var(--emp-text);
+
+    font-size: 1.12rem;
+
+    font-weight: 800;
+
+    line-height: 1.35;
+
+}
+
+
+
+#employment-story .employment-community-label {
+
+    display: inline-block;
+
+    padding: 5px 9px;
+
+    border: 1px solid rgba(169,155,255,.22);
+
+    border-radius: 7px;
+
+    background: rgba(169,155,255,.08);
+
+    color: #c9c0ff;
+
+    font-size: .72rem;
+
+    font-weight: 700;
+
+    line-height: 1.5;
+
+}
+
+
+
+#employment-story .employment-country-story {
+
+    margin-bottom: 0;
+
+    color: #aebbd0;
+
+    font-size: .92rem;
+
+    line-height: 1.8;
+
+}
+
+
+
+/* Employment insights */
+
+#employment-story .employment-insight-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 14px;
+
+    margin-top: 20px;
+
+}
+
+
+
+#employment-story .employment-insight-card {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 14px;
+
+    padding: 22px;
+
+    border: 1px solid rgba(140,164,201,.16);
+
+    border-radius: 16px;
+
+    background: rgba(167,178,200,.045);
+
+}
+
+
+
+#employment-story .employment-insight-number {
+
+    flex: 0 0 auto;
+
+    color: var(--emp-cyan);
+
+    font-size: .82rem;
+
+    font-weight: 850;
+
+    letter-spacing: .08em;
+
+}
+
+
+
+#employment-story .employment-insight-card h3 {
+
+    margin-bottom: 8px;
+
+    color: var(--emp-text);
+
+    font-size: 1rem;
+
+    font-weight: 800;
+
+}
+
+
+
+#employment-story .employment-insight-card p {
+
+    margin-bottom: 0;
+
+    color: var(--emp-muted);
+
+    font-size: .86rem;
+
+    line-height: 1.7;
+
+}
+
+
+
+/* Year slider */
+
+#employment-story .employment-year-label {
+
+    margin: 0 0 12px;
+
+    color: var(--emp-text);
+
+    font-size: 2rem;
+
+    font-weight: 850;
+
+    letter-spacing: -.04em;
+
+}
+
+
+
+#employment-story .employment-year-slider {
+
+    margin: 20px 14px 32px;
+
+}
+
+
+
+/* Closing */
+
+#employment-story .employment-closing {
+
+    position: relative;
+
+    padding: 90px 0 100px;
+
+    overflow: hidden;
+
+    border-top: 1px solid rgba(100,229,255,.16);
+
+    background:
+
+        radial-gradient(ellipse at 85% 15%, rgba(169,155,255,.13), transparent 34%),
+
+        linear-gradient(180deg, #111a2c, #0b1020);
+
+}
+
+
+
+#employment-story .employment-closing-inner {
+
+    position: relative;
+
+    z-index: 1;
+
+}
+
+
+
+#employment-story .employment-closing-title {
+
+    max-width: 900px;
+
+    margin-bottom: 22px;
+
+    color: var(--emp-text);
+
+    font-size: clamp(2.3rem, 6vw, 5rem);
+
+    font-weight: 850;
+
+    letter-spacing: -.06em;
+
+    line-height: 1.02;
+
+}
+
+
+
+#employment-story .employment-closing-description {
+
+    max-width: 800px;
+
+    margin-bottom: 28px;
+
+    color: #b8c4d8;
+
+    font-size: 1.05rem;
+
+    line-height: 1.85;
+
+}
+
+
+
+#employment-story .employment-next-label {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 12px 16px;
+
+    border: 1px solid rgba(100,229,255,.22);
+
+    border-radius: 10px;
+
+    background: rgba(100,229,255,.055);
+
+    color: var(--emp-cyan);
+
+    font-size: .73rem;
+
+    font-weight: 850;
+
+    letter-spacing: .13em;
+
+}
+
+
+
+/* Cinematic intro overlay. Keep above the navbar and the page. */
+
+#employment-story .chapter-intro-overlay {
+
+    position: fixed;
+
+    z-index: 99999;
+
+    inset: 0;
+
+    display: grid;
+
+    place-items: center;
+
+    width: 100vw;
+
+    height: 100dvh;
+
+    padding: 24px;
+
+    overflow: hidden;
+
+    background: #070b16;
+
+    color: #f4f7ff;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+}
+
+
+
+#employment-story .chapter-intro-overlay.is-playing {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    animation: employment-intro-exit 850ms ease 3.2s forwards;
+}
+
+
+
+#employment-story .cinematic-backdrop {
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+
+        radial-gradient(ellipse at 50% 46%, rgba(100,229,255,.12), transparent 38%),
+
+        radial-gradient(ellipse at 75% 30%, rgba(169,155,255,.16), transparent 34%),
+
+        linear-gradient(135deg, #101a2c, #070b16 68%);
+
+}
+
+
+
+#employment-story .cinematic-backdrop::before {
+
+    position: absolute;
+
+    inset: 0;
+
+    background-image: linear-gradient(rgba(167,178,200,.045) 1px, transparent 1px),
+
+                      linear-gradient(90deg, rgba(167,178,200,.045) 1px, transparent 1px);
+
+    background-size: 48px 48px;
+
+    content: "";
+
+}
+
+
+
+#employment-story .cinematic-scanline {
+
+    position: absolute;
+
+    inset: 0;
+
+    background: linear-gradient(transparent 50%, rgba(0,0,0,.13) 50%);
+
+    background-size: 100% 4px;
+
+    opacity: .24;
+
+    pointer-events: none;
+
+}
+
+
+
+#employment-story .cinematic-content {
+
+    position: relative;
+
+    z-index: 1;
+
+    width: min(950px, 100%);
+
+    text-align: center;
+
+    animation: employment-intro-rise 900ms cubic-bezier(.2,.75,.25,1) both;
+
+}
+
+
+
+#employment-story .cinematic-eyebrow {
+
+    margin-bottom: 18px;
+
+    color: var(--emp-cyan);
+
+    font-size: .75rem;
+
+    font-weight: 850;
+
+    letter-spacing: .28em;
+
+}
+
+
+
+#employment-story .cinematic-giant-number {
+
+    position: absolute;
+
+    z-index: -1;
+
+    top: 50%;
+
+    left: 50%;
+
+    color: rgba(100,229,255,.055);
+
+    font-size: clamp(16rem, 38vw, 31rem);
+
+    font-weight: 900;
+
+    line-height: 1;
+
+    transform: translate(-50%, -54%);
+
+    user-select: none;
+
+}
+
+
+
+#employment-story .cinematic-chapter-label {
+
+    margin-bottom: 16px;
+
+    color: #c1cbe0;
+
+    font-size: .86rem;
+
+    font-weight: 800;
+
+    letter-spacing: .3em;
+
+}
+
+
+
+#employment-story .cinematic-title {
+
+    margin: 0;
+
+    color: #f4f7ff;
+
+    font-size: clamp(3rem, 9vw, 7.5rem);
+
+    font-weight: 900;
+
+    letter-spacing: -.07em;
+
+    line-height: .96;
+
+}
+
+
+
+#employment-story .cinematic-title-line {
+
+    display: block;
+
+}
+
+
+
+#employment-story .cinematic-title-accent {
+
+    color: var(--emp-cyan);
+
+    background: linear-gradient(90deg, #64e5ff, #a99bff);
+
+    -webkit-background-clip: text;
+
+    background-clip: text;
+
+    -webkit-text-fill-color: transparent;
+
+}
+
+
+
+#employment-story .cinematic-subtitle {
+
+    margin: 24px 0 0;
+
+    color: #b8c4d8;
+
+    font-size: clamp(.95rem, 2vw, 1.15rem);
+
+    letter-spacing: .025em;
+
+}
+
+
+
+#employment-story .cinematic-light-streak {
+
+    width: min(320px, 55vw);
+
+    height: 2px;
+
+    margin: 34px auto 0;
+
+    background: linear-gradient(90deg, transparent, var(--emp-cyan), var(--emp-purple), transparent);
+
+    box-shadow: 0 0 22px rgba(100,229,255,.42);
+
+    animation: employment-streak 1.8s ease-in-out infinite alternate;
+
+}
+
+
+
+#employment-story .cinematic-particles {
+
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+}
+
+
+
+#employment-story .cinematic-spark {
+
+    position: absolute;
+
+    top: 25%;
+
+    left: 16%;
+
+    width: 5px;
+
+    height: 5px;
+
+    border-radius: 50%;
+
+    background: var(--emp-cyan);
+
+    box-shadow: 0 0 18px var(--emp-cyan);
+
+    animation: employment-spark-float 3s ease-in-out infinite alternate;
+
+}
+
+
+
+#employment-story .cinematic-spark.spark-two {
+
+    top: 70%;
+
+    left: 78%;
+
+    width: 4px;
+
+    height: 4px;
+
+    animation-delay: -.9s;
+
+}
+
+
+
+#employment-story .cinematic-spark.spark-three {
+
+    top: 28%;
+
+    left: 83%;
+
+    width: 3px;
+
+    height: 3px;
+
+    animation-delay: -1.5s;
+
+}
+
+
+
+@keyframes employment-intro-rise {
+
+    from { opacity: 0; transform: translateY(24px) scale(.985); }
+
+    to { opacity: 1; transform: translateY(0) scale(1); }
+
+}
+
+
+
+@keyframes employment-intro-exit {
+
+    0% { opacity: 1; visibility: visible; }
+
+    99% { opacity: 0; visibility: visible; }
+
+    100% { opacity: 0; visibility: hidden; pointer-events: none; }
+
+}
+
+
+
+@keyframes employment-streak {
+
+    from { opacity: .45; transform: scaleX(.72); }
+
+    to { opacity: 1; transform: scaleX(1); }
+
+}
+
+
+
+@keyframes employment-spark-float {
+
+    from { transform: translateY(-8px); opacity: .35; }
+
+    to { transform: translateY(12px); opacity: 1; }
+
+}
+
+
+
+/* Scroll reveal states used by employment.js */
+
+#employment-story.story-animations-ready .reveal:not(.is-visible) {
+
+    opacity: 0;
+
+    transform: translateY(26px);
+
+}
+
+
+
+#employment-story .reveal {
+
+    transition: opacity 650ms ease, transform 650ms cubic-bezier(.2,.7,.2,1);
+
+}
+
+
+
+#employment-story .reveal.is-visible {
+
+    opacity: 1;
+
+    transform: translateY(0);
+
+}
+
+
+
+/* Responsive */
+
+@media (max-width: 800px) {
+
+    #employment-story .employment-section {
+
+        padding: 62px 0;
+
+    }
+
+
+
+    #employment-story .employment-country-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+
+    #employment-story .employment-insight-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+
+    #employment-story .employment-section-header {
+
+        grid-template-columns: 42px minmax(0, 1fr);
+
+        gap: 15px;
+
+    }
+
+
+
+    #employment-story .employment-act-number {
+
+        width: 40px;
+
+        height: 40px;
+
+        border-radius: 12px;
+
+    }
+
+}
+
+
+
+@media (max-width: 560px) {
+
+    #employment-story .employment-container {
+
+        width: min(100% - 32px, 1160px);
+
+    }
+
+
+
+    #employment-story .employment-hero {
+
+        min-height: auto;
+
+        padding: 72px 0 62px;
+
+    }
+
+
+
+    #employment-story .employment-hero-title {
+
+        font-size: clamp(2.6rem, 14vw, 4.3rem);
+
+    }
+
+
+
+    #employment-story .employment-section {
+
+        padding: 48px 0;
+
+    }
+
+
+
+    #employment-story .employment-section-header {
+
+        grid-template-columns: 1fr;
+
+        gap: 14px;
+
+    }
+
+
+
+    #employment-story .employment-panel {
+
+        padding: 17px;
+
+        border-radius: 15px;
+
+    }
+
+
+
+    #employment-story .employment-filter-chip {
+
+        font-size: .76rem;
+
+        padding: 6px 9px;
+
+    }
+
+
+
+    #employment-story .employment-closing {
+
+        padding: 64px 0;
+
+    }
+
+}
+
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    #employment-story \*,
+
+    #employment-story \*::before,
+
+    #employment-story \*::after {
+
+        scroll-behavior: auto !important;
+
+        animation-duration: .01ms !important;
+
+        animation-iteration-count: 1 !important;
+
+        transition-duration: .01ms !important;
+
+    }
+
+
+
+    #employment-story.story-animations-ready .reveal:not(.is-visible) {
+
+        opacity: 1;
+
+        transform: none;
+
+    }
+
+}

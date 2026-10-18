@@ -11,24 +11,25 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
-  color-scheme: light;
-  --bg: #f4f2ed;
-  --card: #fffefa;
-  --card-alt: #f8f7f2;
-  --tx: #202b42;
-  --mu: #59677e;
-  --pr: #3558a8;
-  --pr2: #6c55a5;
-  --ac: #c56b42;
-  --ok: #247b69;
-  --bad: #b74756;
-  --bd: #d9dfE8;
-  --sh: 0 12px 32px rgba(34, 49, 79, .09);
+  color-scheme: dark;
+  /* Dark cosmic archive is the default launch theme. */
+  --bg: #111a2b;
+  --card: #1b2940;
+  --card-alt: #202f48;
+  --tx: #f4f6fb;
+  --mu: #c0cadd;
+  --pr: #a9c1ff;
+  --pr2: #c4b2ff;
+  --ac: #ffb184;
+  --ok: #75d3b9;
+  --bad: #ff9aa5;
+  --bd: #3b4a63;
+  --sh: 0 12px 32px rgba(0, 0, 0, .22);
   --space: #142544;
   --space-2: #203b64;
-  --cyan: #287e91;
-  --gold: #a96d32;
-  --paper: #fffefa;
+  --cyan: #79d6e5;
+  --gold: #f1c27d;
+  --paper: #1b2940;
   --radius: 18px;
 }
 
@@ -56,26 +57,36 @@ button, input, select, textarea { font: inherit; }
 button, summary, select, input[type="checkbox"], input[type="radio"] { cursor: pointer; }
 :focus-visible { outline: 3px solid #287e91; outline-offset: 3px; }
 
-/* Optional dark mode remains readable if the app uses .theme-dark. */
+/* The root class controls the theme variables for the entire Dash app. */
 .theme-dark {
   color-scheme: dark;
-  --bg: #111a2b;
-  --card: #1b2940;
-  --card-alt: #202f48;
-  --tx: #f4f6fb;
-  --mu: #c0cadd;
-  --pr: #a9c1ff;
-  --pr2: #c4b2ff;
-  --ac: #ffb184;
-  --ok: #75d3b9;
-  --bad: #ff9aa5;
-  --bd: #3b4a63;
-  --sh: 0 12px 32px rgba(0, 0, 0, .22);
 }
-.theme-dark body {
-  background:
-    radial-gradient(ellipse at 12% 0%, rgba(108, 85, 165, .12), transparent 32rem),
-    var(--bg);
+.theme-light {
+  color-scheme: light;
+  --bg: #f4f2ed;
+  --card: #fffefa;
+  --card-alt: #f8f7f2;
+  --tx: #202b42;
+  --mu: #59677e;
+  --pr: #3558a8;
+  --pr2: #6c55a5;
+  --ac: #c56b42;
+  --ok: #247b69;
+  --bad: #b74756;
+  --bd: #d9dfe8;
+  --sh: 0 12px 32px rgba(34, 49, 79, .09);
+  --cyan: #287e91;
+  --gold: #a96d32;
+  --paper: #fffefa;
+}
+/* app-root is inside body, so use :has() to theme the page canvas too. */
+body:has(#app-root.theme-dark) {
+  background: #111a2b;
+  color: #f4f6fb;
+}
+body:has(#app-root.theme-light) {
+  background: #f4f2ed;
+  color: #202b42;
 }
 
 /* Header and navigation: a clean archive-console, not a black interface. */
@@ -459,3 +470,38 @@ button, summary, select, input[type="checkbox"], input[type="radio"] { cursor: p
     animation-iteration-count: 1 !important;
   }
 }
+
+
+/* Navigation dropdown behavior and contrast fixes */
+.nav-group > summary { user-select: none; }
+.nav-group > summary:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+.nav-dropdown { color: var(--tx); }
+.theme-dark .nav-dropdown .nav-link { color: var(--tx); }
+.theme-dark .nav-dropdown .nav-link:hover,
+.theme-dark .nav-dropdown .nav-link.active {
+  background: #304568;
+  color: #ffffff;
+}
+
+/* Dash/React-Select dropdowns need explicit dark colors too. */
+.theme-dark .Select-control,
+.theme-dark .Select-menu-outer,
+.theme-dark .Select-option,
+.theme-dark .Select-value-label,
+.theme-dark .Select-placeholder,
+.theme-dark .Select-input > input,
+.theme-dark .Select--single > .Select-control .Select-value,
+.theme-dark .Select--multi .Select-value {
+  color: #f4f6fb;
+}
+.theme-dark .Select-control,
+.theme-dark .Select-menu-outer,
+.theme-dark .Select-option,
+.theme-dark .Select--multi .Select-value {
+  background-color: #1b2940;
+  border-color: #3b4a63;
+}
+.theme-dark .Select-option.is-focused { background-color: #304568; }
+.theme-dark .Select-option.is-selected { background-color: #3558a8; color: #fff; }
+.theme-dark .Select--multi .Select-value-icon { border-right-color: #526582; }
+.theme-dark .Select--multi .Select-value-icon:hover { background-color: #304568; color: #fff; }

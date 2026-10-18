@@ -11,10 +11,7 @@ from pages import (
     economic_impact,
     country_explorer,
     employment,
-    sector_impact,
-    trade_tourism,
-    government_response,
-    pandemic_analysis,
+    pandemic_response,
     recovery,
     data_methodology,
 )
@@ -31,25 +28,115 @@ server = app.server
 
 # The route registry is the single source of truth for page paths and labels.
 PAGE_REGISTRY = [
-    {"key": "overview", "label": "Overview", "path": "/", "layout": overview.layout, "group": "Discover"},
-    {"key": "country-explorer", "label": "Country Explorer", "path": "/country-explorer", "layout": country_explorer.layout, "group": "Discover"},
-    {"key": "economic-impact", "label": "Economic Impact", "path": "/economic-impact", "layout": economic_impact.layout, "group": "Economic Impact"},
-    {"key": "employment", "label": "Employment & Inequality", "path": "/employment", "layout": employment.layout, "group": "Economic Impact"},
-    {"key": "sector-impact", "label": "Sector Impact", "path": "/sector-impact", "layout": sector_impact.layout, "group": "Economic Impact"},
-    {"key": "trade-tourism", "label": "Trade & Tourism", "path": "/trade-tourism", "layout": trade_tourism.layout, "group": "Economic Impact"},
-    {"key": "pandemic-analysis", "label": "Pandemic & Economy", "path": "/pandemic-analysis", "layout": pandemic_analysis.layout, "group": "Analysis & Recovery"},
-    {"key": "government-response", "label": "Government Response", "path": "/government-response", "layout": government_response.layout, "group": "Analysis & Recovery"},
-    {"key": "recovery", "label": "Recovery", "path": "/recovery", "layout": recovery.layout, "group": "Analysis & Recovery"},
-    {"key": "data-methodology", "label": "Data & Methodology", "path": "/data-methodology", "layout": data_methodology.layout, "group": "About the Data"},
+    # Discover
+    {
+        "key": "overview",
+        "label": "Overview",
+        "path": "/",
+        "layout": overview.layout,
+        "group": "Discover",
+    },
+    {
+        "key": "country-explorer",
+        "label": "Country Explorer",
+        "path": "/country-explorer",
+        "layout": country_explorer.layout,
+        "group": "Discover",
+    },
+
+    # Pandemic & Policy — standalone tab
+    {
+        "key": "pandemic-response",
+        "label": "Pandemic & Policy",
+        "path": "/pandemic-response",
+        "layout": pandemic_response.layout,
+        "group": "Standalone",
+    },
+
+    # Economy
+    {
+        "key": "economic-impact",
+        "label": "Economic Impact",
+        "path": "/economic-impact",
+        "layout": economic_impact.layout,
+        "group": "Economy",
+    },
+    {
+        "key": "employment",
+        "label": "Employment",
+        "path": "/employment",
+        "layout": employment.layout,
+        "group": "Economy",
+    },
+
+    # Recovery — standalone tab
+    {
+        "key": "recovery",
+        "label": "Recovery",
+        "path": "/recovery",
+        "layout": recovery.layout,
+        "group": "Standalone",
+    },
+
+    # About the Data
+    {
+        "key": "data-methodology",
+        "label": "Data & Methodology",
+        "path": "/data-methodology",
+        "layout": data_methodology.layout,
+        "group": "About the Data",
+    },
 ]
 
-NAV_GROUPS = ["Discover", "Economic Impact", "Analysis & Recovery", "About the Data"]
+NAV_GROUPS = [
+    "Discover",
+    "Pandemic & Policy",
+    "Economy",
+    "Recovery",
+    "About the Data",
+]
 
 
 def build_navigation():
-    """Create grouped dropdown navigation, keeping all routes discoverable."""
+    """Build grouped dropdowns and standalone navigation links."""
     groups = []
+
     for group_name in NAV_GROUPS:
+
+        # These tabs open their pages directly, without a dropdown.
+        if group_name == "Pandemic & Policy":
+            page = next(
+                page for page in PAGE_REGISTRY
+                if page["key"] == "pandemic-response"
+            )
+
+            groups.append(
+                dcc.Link(
+                    page["label"],
+                    href=page["path"],
+                    id=f"nav-{page['key']}",
+                    className="nav-link nav-standalone",
+                )
+            )
+            continue
+
+        if group_name == "Recovery":
+            page = next(
+                page for page in PAGE_REGISTRY
+                if page["key"] == "recovery"
+            )
+
+            groups.append(
+                dcc.Link(
+                    page["label"],
+                    href=page["path"],
+                    id=f"nav-{page['key']}",
+                    className="nav-link nav-standalone",
+                )
+            )
+            continue
+
+        # The remaining categories use dropdown menus.
         links = [
             dcc.Link(
                 page["label"],
@@ -60,15 +147,28 @@ def build_navigation():
             for page in PAGE_REGISTRY
             if page["group"] == group_name
         ]
+
         groups.append(
             html.Details(
-                [html.Summary(group_name, className="nav-group-label"), html.Div(links, className="nav-dropdown")],
+                [
+                    html.Summary(
+                        group_name,
+                        className="nav-group-label",
+                    ),
+                    html.Div(
+                        links,
+                        className="nav-dropdown",
+                    ),
+                ],
                 className="nav-group",
-                open=(group_name == "Discover"),
             )
         )
-    return html.Nav(groups, className="nav-links", **{"aria-label": "Main navigation"})
 
+    return html.Nav(
+        groups,
+        className="nav-links",
+        **{"aria-label": "Main navigation"},
+    )
 
 app.layout = html.Div(
     [
@@ -94,54 +194,6 @@ app.layout = html.Div(
         ),
         # Shared controls are visible across the site. They store selections now;
         # individual page charts will connect to these values in later development.
-        html.Section(
-            [
-                html.Div(
-                    [
-                        html.Div(
-                            [
-                                html.Label("Countries / regions", htmlFor="global-country-filter"),
-                                dcc.Dropdown(
-                                    id="global-country-filter",
-                                    options=[
-                                        {"label": name, "value": name}
-                                        for name in ["World", "France", "United States", "Euro area", "China", "India", "Germany", "United Kingdom"]
-                                    ],
-                                    value=["World", "France", "United States"],
-                                    multi=True,
-                                    clearable=True,
-                                    placeholder="Choose countries or regions",
-                                ),
-                            ],
-                            className="global-filter-field global-filter-countries",
-                        ),
-                        html.Div(
-                            [
-                                html.Label("Time period", htmlFor="global-date-filter"),
-                                dcc.Dropdown(
-                                    id="global-date-filter",
-                                    options=[
-                                        {"label": "Full period (2019–2023)", "value": "2019:2023"},
-                                        {"label": "Pre-pandemic baseline (2019)", "value": "2019:2019"},
-                                        {"label": "Initial shock (2020–2021)", "value": "2020:2021"},
-                                        {"label": "Recovery period (2022–2023)", "value": "2022:2023"},
-                                    ],
-                                    value="2019:2023",
-                                    clearable=False,
-                                ),
-                            ],
-                            className="global-filter-field",
-                        ),
-                        html.P(
-                            "Shared selections are saved for relevant pages. Charts will be connected to these filters as each page is developed.",
-                            className="global-filter-note",
-                        ),
-                    ],
-                    className="global-filter-wrap",
-                )
-            ],
-            className="global-filter-bar",
-        ),
         html.Main(id="page-content"),
         html.Footer(
             [
@@ -159,6 +211,7 @@ app.layout = html.Div(
         html.Div(id="toast", className="toast"),
     ],
     id="app-root",
+    className="theme-dark",  # Launch in dark mode by default.
 )
 
 
@@ -181,12 +234,6 @@ def render_page(pathname):
     return [rendered_page, *active_classes]
 
 
-# Store the shared country and date choices in one predictable structure.
-@app.callback(
-    Output("global-filters", "data"),
-    Input("global-country-filter", "value"),
-    Input("global-date-filter", "value"),
-)
 def save_global_filters(countries, date_range):
     start_year, end_year = (date_range or "2019:2023").split(":", maxsplit=1)
     return {

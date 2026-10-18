@@ -1,0 +1,179 @@
+/* Chapter 2 closing takeaways and transition to Chapter 3 */
+.economic-story .closing-steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 34px;
+}
+.economic-story .closing-step {
+    position: relative;
+    min-height: 112px;
+    padding: 20px 17px;
+    overflow: hidden;
+    border: 1px solid rgba(125, 170, 210, 0.18);
+    border-radius: 16px;
+    background: rgba(125, 170, 210, 0.045);
+    transition: transform 220ms ease, border-color 220ms ease, background 220ms ease;
+}
+.economic-story .closing-step:hover {
+    transform: translateY(-4px);
+    border-color: rgba(100, 229, 255, 0.48);
+    background: rgba(100, 229, 255, 0.07);
+}
+.economic-story .closing-step .closing-number {
+    display: block;
+    margin-bottom: 13px;
+    color: #64e5ff;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+}
+.economic-story .closing-step p {
+    margin: 0;
+    font-size: 0.92rem;
+    font-weight: 650;
+    line-height: 1.5;
+}
+.economic-story .chapter-transition {
+    position: relative;
+    isolation: isolate;
+    margin-top: 48px;
+    padding: clamp(24px, 4vw, 42px);
+    overflow: hidden;
+    border: 1px solid rgba(100, 229, 255, 0.24);
+    border-radius: 24px;
+    background:
+        radial-gradient(ellipse at 100% 0%, rgba(92, 95, 255, 0.18), transparent 48%),
+        linear-gradient(120deg, rgba(22, 39, 60, 0.97), rgba(10, 20, 35, 0.98));
+    box-shadow: 0 22px 65px rgba(0, 0, 0, 0.18);
+}
+.economic-story .chapter-transition::before {
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 4px;
+    background: linear-gradient(180deg, #64e5ff, #8d83ff, transparent);
+    content: "";
+}
+.economic-story .chapter-transition::after {
+    position: absolute;
+    z-index: -1;
+    top: -100px;
+    right: -90px;
+    width: 260px;
+    height: 260px;
+    border: 1px solid rgba(100, 229, 255, 0.14);
+    border-radius: 50%;
+    box-shadow: 0 0 0 28px rgba(100, 229, 255, 0.025), 0 0 0 58px rgba(100, 229, 255, 0.02);
+    content: "";
+    pointer-events: none;
+}
+.economic-story .transition-topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+}
+.economic-story .transition-eyebrow {
+    color: #64e5ff;
+    font-size: 0.73rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+}
+.economic-story .transition-number {
+    color: rgba(100, 229, 255, 0.7);
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+}
+.economic-story .transition-title {
+    max-width: 700px;
+    margin: 0;
+    color: #f4f8ff;
+    font-size: clamp(1.55rem, 3.3vw, 2.65rem);
+    font-weight: 800;
+    letter-spacing: -0.035em;
+    line-height: 1.15;
+}
+.economic-story .transition-description {
+    max-width: 650px;
+    margin: 18px 0 26px;
+    color: rgba(231, 239, 250, 0.78);
+    font-size: 1rem;
+    line-height: 1.8;
+}
+.economic-story .transition-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    min-height: 52px;
+    padding: 14px 21px;
+    border: 1px solid rgba(100, 229, 255, 0.65);
+    border-radius: 12px;
+    background: #64e5ff;
+    color: #071521;
+    font-size: 0.92rem;
+    font-weight: 800;
+    text-decoration: none;
+    transition: transform 220ms ease, background 220ms ease, box-shadow 220ms ease;
+}
+.economic-story .transition-button:hover {
+    transform: translateY(-3px);
+    background: #a2f1ff;
+    box-shadow: 0 10px 32px rgba(100, 229, 255, 0.2);
+}
+.economic-story .transition-button:focus-visible {
+    outline: 3px solid #ffffff;
+    outline-offset: 5px;
+}
+.economic-story .transition-button-arrow {
+    display: inline-block;
+    font-size: 1.3rem;
+    transition: transform 220ms ease;
+}
+.economic-story .transition-button:hover .transition-button-arrow {
+    transform: translateX(5px);
+}
+@media (max-width: 850px) {
+    .economic-story .closing-steps {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+@media (max-width: 520px) {
+    .economic-story .closing-steps {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    .economic-story .closing-step {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        min-height: auto;
+        padding: 16px;
+    }
+    .economic-story .closing-step .closing-number { margin: 0; }
+    .economic-story .chapter-transition {
+        margin-top: 32px;
+        border-radius: 18px;
+    }
+    .economic-story .transition-button {
+        width: 100%;
+        gap: 12px;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .economic-story .closing-step,
+    .economic-story .transition-button,
+    .economic-story .transition-button-arrow {
+        transition: none;
+    }
+    .economic-story .closing-step:hover,
+    .economic-story .transition-button:hover {
+        transform: none;
+    }
+}
