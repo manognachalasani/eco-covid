@@ -658,33 +658,136 @@ layout = html.Div(
             ], className="employment-container"),
         ], className="employment-section employment-section-alt reveal"),
 
-        # CLOSING
-        html.Section([
-            html.Div([
-                html.P(
-                    "CHAPTER 03 · THE HUMAN TAKEAWAY",
-                    className="employment-kicker",
-                ),
-                html.H2([
-                    html.Span("Behind every rate,", className="employment-title-line"),
-                    html.Span(
-                        "there is a life.",
-                        className="employment-title-line employment-title-accent",
-                    ),
-                ], className="employment-closing-title"),
-                html.P(
-                    "The employment story is not complete when the curve "
-                    "turns upward. It is complete only when we also ask "
-                    "who found work again, who was left behind, and whether "
-                    "recovery reached the households that needed it most.",
-                    className="employment-closing-description",
-                ),
+        
+        # CLOSING — CHAPTER 03 SUMMARY / TRANSITION TO RECOVERY
+        html.Section(
+            [
                 html.Div(
-                    "NEXT QUESTION  /  WHAT DID RECOVERY REALLY MEAN?",
-                    className="employment-next-label",
+                    [
+                        html.P(
+                            "CHAPTER 03 · THE HUMAN TAKEAWAY",
+                            className="employment-kicker",
+                        ),
+
+                        html.H2(
+                            [
+                                html.Span(
+                                    "A job returning",
+                                    className="employment-title-line",
+                                ),
+                                html.Span(
+                                    "is not the whole recovery.",
+                                    className=(
+                                        "employment-title-line "
+                                        "employment-title-accent"
+                                    ),
+                                ),
+                            ],
+                            className="employment-closing-title",
+                        ),
+
+                        html.P(
+                            "Employment figures can climb back toward normal "
+                            "while families are still rebuilding their savings, "
+                            "workers are accepting fewer hours, and entire "
+                            "communities are finding their footing again. "
+                            "The numbers may signal a rebound. The human story "
+                            "asks whether people have truly recovered.",
+                            className="employment-closing-description",
+                        ),
+
+                        # Three questions that lead into the recovery chapter.
+                        html.Div(
+                            [
+                                html.Div(
+                                    [
+                                        html.Span(
+                                            "01",
+                                            className="closing-number",
+                                        ),
+                                        html.P("Did jobs return?"),
+                                    ],
+                                    className="closing-step",
+                                ),
+                                html.Div(
+                                    [
+                                        html.Span(
+                                            "02",
+                                            className="closing-number",
+                                        ),
+                                        html.P("Did livelihoods recover?"),
+                                    ],
+                                    className="closing-step",
+                                ),
+                                html.Div(
+                                    [
+                                        html.Span(
+                                            "03",
+                                            className="closing-number",
+                                        ),
+                                        html.P("Who was left behind?"),
+                                    ],
+                                    className="closing-step",
+                                ),
+                            ],
+                            className="closing-steps",
+                        ),
+
+                        # Transition card to Chapter 04: Recovery.
+                        html.Div(
+                            [
+                                html.Div(
+                                    [
+                                        html.Span(
+                                            "NEXT CHAPTER",
+                                            className="transition-eyebrow",
+                                        ),
+                                        html.Span(
+                                            "04",
+                                            className="transition-number",
+                                        ),
+                                    ],
+                                    className="transition-topline",
+                                ),
+
+                                html.H3(
+                                    "The numbers began to heal. Did the world?",
+                                    className="transition-title",
+                                ),
+
+                                html.P(
+                                    "The shock reshaped economies. The "
+                                    "employment crisis reshaped lives. Now, "
+                                    "we follow the road beyond the crisis: "
+                                    "which economies bounced back, how quickly "
+                                    "they recovered, and what the headline "
+                                    "figures may still leave unseen.",
+                                    className="transition-description",
+                                ),
+
+                                dcc.Link(
+                                    [
+                                        html.Span(
+                                            "Continue to Recovery",
+                                            className="transition-button-text",
+                                        ),
+                                        html.Span(
+                                            "→",
+                                            className="transition-button-arrow",
+                                        ),
+                                    ],
+                                    href="/recovery",
+                                    className="transition-button",
+                                ),
+                            ],
+                            className="chapter-transition",
+                        ),
+                    ],
+                    className="employment-container employment-closing-inner",
                 ),
-            ], className="employment-container employment-closing-inner"),
-        ], className="employment-closing reveal"),
+            ],
+            className="employment-closing reveal",
+        ),
     ],
 )
 
