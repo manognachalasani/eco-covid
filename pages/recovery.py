@@ -18,28 +18,14 @@ from dash import html, dcc
 # Existing analysis module functions are reused where available. The page keeps
 # its own validated calculations as a safe fallback if the module is at root
 # rather than inside src/.
-try:
-    from src.analysis import (
-        annual_data,
-        real_gdp_index,
-        gdp_recovery_2024,
-        unemployment_change,
-        inflation_change,
-        wealth_vs_shock,
+from src.analysis import (
+    annual_data,
+    real_gdp_index,
+    gdp_recovery_2024,
+    unemployment_change,
+    inflation_change,
+    wealth_vs_shock,
     )
-except ImportError:
-    try:
-        from analysis import (
-            annual_data,
-            real_gdp_index,
-            gdp_recovery_2024,
-            unemployment_change,
-            inflation_change,
-            wealth_vs_shock,
-        )
-    except ImportError:
-        annual_data = real_gdp_index = gdp_recovery_2024 = None
-        unemployment_change = inflation_change = wealth_vs_shock = None
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
