@@ -1,293 +1,155 @@
+# pages/employment.py — PandemiScope Chapter 3
+# Real unemployment data; cinematic page layout preserved.
 
-# pages/employment.py
+from pathlib import Path
 
 from dash import html, dcc, callback, Input, Output
 import pandas as pd
 import plotly.graph_objects as go
 
+from src.visualizations import (
+    plot_unemployment,
+    plot_unemployment_change_2020,
+    plot_unemployment_vs_2019,
+    COLORS as DATA_COLORS,
+)
 
-# ============================================================
-# MOCK DATA — REPLACE WITH VERIFIED DATA BEFORE PRESENTATION
-#
-# All figures below are invented for prototyping.
-# They must not be presented as actual historical observations.
-#
-# unemployment_rate: illustrative annual unemployment rate (%)
-# employment_index: illustrative employment index, 2019 = 100
-# ============================================================
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DATA_PATH = PROJECT_ROOT / "data" / "processed" / "final_dataset.csv"
+if not DATA_PATH.is_file():
+    raise FileNotFoundError(
+        f"Cleaned dataset not found: {DATA_PATH}. "
+        "Update DATA_PATH in pages/employment.py to match your CSV."
+    )
 
-YEARS = [2018, 2019, 2020, 2021, 2022, 2023]
-
-COUNTRY_DATA = {
-    "Central African Republic": {
-        "unemployment_rate": [6.2, 6.3, 7.0, 6.8, 6.5, 6.3],
-        "employment_index": [98, 100, 94, 96, 99, 101],
-        "community": "Informal work and small-scale livelihoods",
-        "story": (
-            "For households relying on informal trade and daily earnings, "
-            "movement restrictions and disrupted markets could make "
-            "earning a living more uncertain."
-        ),
-    },
-    "China": {
-        "unemployment_rate": [4.9, 5.2, 5.6, 5.1, 5.6, 5.2],
-        "employment_index": [98, 100, 96, 99, 97, 101],
-        "community": "Manufacturing and urban service workers",
-        "story": (
-            "Factory interruptions and changes in consumer demand could "
-            "affect workers differently from those able to work remotely."
-        ),
-    },
-    "Germany": {
-        "unemployment_rate": [3.4, 3.1, 3.8, 3.6, 3.1, 3.0],
-        "employment_index": [99, 100, 98, 100, 103, 105],
-        "community": "Industrial workers and small businesses",
-        "story": (
-            "Support measures and reduced working hours can shape the "
-            "difference between keeping a job and losing working income."
-        ),
-    },
-    "United Kingdom": {
-        "unemployment_rate": [4.0, 3.8, 4.5, 4.8, 3.8, 4.0],
-        "employment_index": [99, 100, 96, 97, 100, 102],
-        "community": "Hospitality, retail and service workers",
-        "story": (
-            "Workers in customer-facing sectors could face sudden closures, "
-            "reduced hours and uncertainty about their next pay cheque."
-        ),
-    },
-    "The Gambia": {
-        "unemployment_rate": [8.5, 8.6, 9.5, 9.1, 8.7, 8.4],
-        "employment_index": [98, 100, 93, 95, 98, 101],
-        "community": "Tourism, transport and informal traders",
-        "story": (
-            "A fall in visitor activity and interruptions to local trade "
-            "could affect people whose income depends on daily transactions."
-        ),
-    },
-    "Guinea-Bissau": {
-        "unemployment_rate": [6.7, 6.8, 7.5, 7.2, 6.9, 6.7],
-        "employment_index": [98, 100, 94, 96, 99, 101],
-        "community": "Agriculture, market traders and small producers",
-        "story": (
-            "Disruptions to transport and markets can affect the ability "
-            "to sell goods, even when a person remains economically active."
-        ),
-    },
-    "Japan": {
-        "unemployment_rate": [2.4, 2.4, 2.8, 2.8, 2.6, 2.6],
-        "employment_index": [99, 100, 98, 99, 101, 102],
-        "community": "Retail, hospitality and older workers",
-        "story": (
-            "A relatively small change in the headline unemployment rate "
-            "can coexist with reduced hours or weaker earnings for some."
-        ),
-    },
-    "Lesotho": {
-        "unemployment_rate": [23.5, 23.6, 25.0, 24.5, 23.9, 23.4],
-        "employment_index": [98, 100, 91, 94, 98, 100],
-        "community": "Garment workers and cross-border earners",
-        "story": (
-            "Disrupted production and cross-border movement can put "
-            "pressure on jobs and household income in connected communities."
-        ),
-    },
-    "East Timor": {
-        "unemployment_rate": [4.8, 4.9, 5.8, 5.5, 5.1, 4.9],
-        "employment_index": [98, 100, 94, 96, 99, 101],
-        "community": "Small businesses, agriculture and tourism",
-        "story": (
-            "When travel and local commerce slow down, people may need "
-            "to combine different income sources to support their families."
-        ),
-    },
-    "United States": {
-        "unemployment_rate": [3.9, 3.7, 8.1, 5.3, 3.6, 3.6],
-        "employment_index": [99, 100, 91, 95, 99, 102],
-        "community": "Service workers, hourly employees and families",
-        "story": (
-            "Sudden layoffs affected many households, while reopening "
-            "brought jobs back at different speeds across sectors."
-        ),
-    },
-}
-
-COUNTRIES = list(COUNTRY_DATA.keys())
-
-# Consistent colours for all countries.
-PALETTE = [
-    "#64E5FF", "#79E2B3", "#A99BFF", "#FF806E", "#FFBD69",
-    "#F08BC5", "#8CB8FF", "#B5D878", "#65D7C5", "#E8A5FF",
+df = pd.read_csv(DATA_PATH).dropna(subset=["country"]).copy()
+df["year"] = pd.to_numeric(df["year"], errors="coerce")
+YEARS = sorted(df["year"].dropna().astype(int).unique().tolist())
+COUNTRIES = sorted(df["country"].dropna().unique().tolist())
+DEFAULT_UNEMPLOYMENT = [
+    c for c in ["United States", "United Kingdom", "China", "Lesotho"]
+    if c in COUNTRIES
 ]
-
-COLORS = dict(zip(COUNTRIES, PALETTE))
-
+DEFAULT_RECOVERY = [
+    c for c in ["United States", "United Kingdom", "Lesotho", "Gambia"]
+    if c in COUNTRIES
+]
+COLORS = DATA_COLORS
 BG = "#0B1020"
 TEXT = "#F4F7FF"
 MUTED = "#A7B2C8"
 
+# The text below is illustrative context about potentially affected communities,
+# not an observed country-level finding of the dataset.
+COUNTRY_CONTEXT = {'Central African Republic': {'community': 'Informal work and small-scale livelihoods',
+                              'story': 'For households relying on informal trade and daily earnings, '
+                                       'movement restrictions and disrupted markets could make '
+                                       'earning a living more uncertain.'},
+ 'China': {'community': 'Manufacturing and urban service workers',
+           'story': 'Factory interruptions and changes in consumer demand could affect workers '
+                    'differently from those able to work remotely.'},
+ 'Germany': {'community': 'Industrial workers and small businesses',
+             'story': 'Support measures and reduced working hours can shape the difference between '
+                      'keeping a job and losing working income.'},
+ 'United Kingdom': {'community': 'Hospitality, retail and service workers',
+                    'story': 'Workers in customer-facing sectors could face sudden closures, reduced '
+                             'hours and uncertainty about their next pay cheque.'},
+ 'Gambia': {'community': 'Tourism, transport and informal traders',
+            'story': 'A fall in visitor activity and interruptions to local trade could affect people '
+                     'whose income depends on daily transactions.'},
+ 'Guinea-Bissau': {'community': 'Agriculture, market traders and small producers',
+                   'story': 'Disruptions to transport and markets can affect the ability to sell '
+                            'goods, even when a person remains economically active.'},
+ 'Japan': {'community': 'Retail, hospitality and older workers',
+           'story': 'A relatively small change in the headline unemployment rate can coexist with '
+                    'reduced hours or weaker earnings for some.'},
+ 'Lesotho': {'community': 'Garment workers and cross-border earners',
+             'story': 'Disrupted production and cross-border movement can put pressure on jobs and '
+                      'household income in connected communities.'},
+ 'East Timor': {'community': 'Small businesses, agriculture and tourism',
+                'story': 'When travel and local commerce slow down, people may need to combine '
+                         'different income sources to support their families.'},
+ 'United States': {'community': 'Service workers, hourly employees and families',
+                   'story': 'Sudden layoffs affected many households, while reopening brought jobs '
+                            'back at different speeds across sectors.'}}
 
-def base_figure(fig, height=380):
+
+def real_figure_style(fig, height=550, horizontal=False):
+    """Adapt the existing Plotly charts to the full-width dark story panels."""
     fig.update_layout(
         template="plotly_dark",
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(
-            family="Inter, Plus Jakarta Sans, sans-serif",
-            color=TEXT,
-            size=12,
-        ),
+        font=dict(family="Inter, Plus Jakarta Sans, sans-serif", color=TEXT, size=12),
+        title=None,
         height=height,
-        margin=dict(l=14, r=22, t=25, b=22),
-        hoverlabel=dict(
-            bgcolor="#1C2940",
-            bordercolor="#354663",
-            font_color=TEXT,
-        ),
-        transition=dict(duration=350, easing="cubic-in-out"),
+        autosize=True,
+        margin=dict(l=188 if horizontal else 70, r=85 if horizontal else 40, t=30, b=85),
+        hoverlabel=dict(bgcolor="#1C2940", bordercolor="#354663", font_color=TEXT),
+        legend=dict(orientation="h", y=-0.18, x=0, xanchor="left"),
     )
-    fig.update_xaxes(
-        showgrid=False,
-        zeroline=False,
-        linecolor="#26344C",
-        tickfont=dict(color=MUTED),
-    )
-    fig.update_yaxes(
-        gridcolor="rgba(167,178,200,0.12)",
-        zeroline=False,
-        tickfont=dict(color=MUTED),
-    )
+    fig.update_xaxes(tickfont=dict(color=MUTED), gridcolor="rgba(167,178,200,0.12)")
+    fig.update_yaxes(tickfont=dict(color=MUTED), gridcolor="rgba(167,178,200,0.12)")
     return fig
 
 
 def unemployment_chart(selected):
-    fig = go.Figure()
-
-    for country in selected:
-        values = COUNTRY_DATA[country]["unemployment_rate"]
-        fig.add_trace(go.Scatter(
-            x=YEARS,
-            y=values,
-            name=country,
-            mode="lines+markers",
-            line=dict(color=COLORS[country], width=2.6, shape="spline"),
-            marker=dict(size=5),
-            hovertemplate=(
-                "<b>%{fullData.name}</b><br>"
-                "%{x}: %{y:.1f}%<extra></extra>"
-            ),
-        ))
-
-    fig.add_vline(
-        x=2020,
-        line_dash="dot",
-        line_color="rgba(255,128,110,0.75)",
-        annotation_text="Pandemic shock",
-        annotation_font_color="#FFB1A5",
-    )
-    fig.update_layout(
-        xaxis=dict(tickmode="array", tickvals=YEARS),
-        yaxis_title="Illustrative unemployment rate (%)",
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=1.02,
-            x=0,
-        ),
-    )
-    return base_figure(fig)
+    chosen = [c for c in (selected or []) if c in COUNTRIES]
+    fig = plot_unemployment(df, countries=chosen)
+    return real_figure_style(fig, height=540)
 
 
-def employment_index_chart(selected):
-    fig = go.Figure()
+def unemployment_vs_2019_chart(selected):
+    chosen = [c for c in (selected or []) if c in COUNTRIES]
+    fig = plot_unemployment_vs_2019(df, countries=chosen)
+    return real_figure_style(fig, height=540)
 
-    for country in selected:
-        values = COUNTRY_DATA[country]["employment_index"]
-        fig.add_trace(go.Scatter(
-            x=YEARS,
-            y=values,
-            name=country,
-            mode="lines+markers",
-            line=dict(color=COLORS[country], width=2.6, shape="spline"),
-            marker=dict(size=5),
-            hovertemplate=(
-                "<b>%{fullData.name}</b><br>"
-                "%{x}: index %{y:.1f}<extra></extra>"
-            ),
-        ))
 
-    fig.add_hline(
-        y=100,
-        line_dash="dash",
-        line_color="rgba(255,255,255,0.55)",
-        annotation_text="2019 baseline",
-        annotation_font_color=MUTED,
-    )
-    fig.add_vline(
-        x=2020,
-        line_dash="dot",
-        line_color="rgba(255,128,110,0.75)",
-    )
-    fig.update_layout(
-        xaxis=dict(tickmode="array", tickvals=YEARS),
-        yaxis_title="Illustrative employment index (2019 = 100)",
-    )
-    return base_figure(fig)
+def unemployment_shock_chart():
+    fig = plot_unemployment_change_2020(df)
+    return real_figure_style(fig, height=650, horizontal=True)
 
 
 def country_snapshot(year):
-    index = YEARS.index(year)
-    rows = sorted(
-        [
-            (
-                country,
-                COUNTRY_DATA[country]["unemployment_rate"][index],
-            )
-            for country in COUNTRIES
-        ],
-        key=lambda item: item[1],
-    )
-
+    """Actual unemployment rates in the selected year, not mock figures."""
+    year_data = (df.loc[df["year"] == year, ["country", "wb_unemployment_rate"]]
+                 .dropna().drop_duplicates("country")
+                 .sort_values("wb_unemployment_rate"))
     fig = go.Figure(go.Bar(
-        x=[row[1] for row in rows],
-        y=[row[0] for row in rows],
+        x=year_data["wb_unemployment_rate"],
+        y=year_data["country"],
         orientation="h",
-        marker_color=[
-            COLORS[row[0]] for row in rows
-        ],
-        text=[f"{row[1]:.1f}%" for row in rows],
+        marker_color=[COLORS.get(country, "#64E5FF") for country in year_data["country"]],
+        text=[f"{v:.1f}%" for v in year_data["wb_unemployment_rate"]],
         textposition="outside",
         cliponaxis=False,
-        hovertemplate="%{y}: %{x:.1f}%<extra></extra>",
+        hovertemplate="%{y}: %{x:.2f}%<extra></extra>",
     ))
-    fig.update_layout(
-        showlegend=False,
-        xaxis_title="Illustrative unemployment rate (%)",
-        yaxis_title=None,
-    )
-    return base_figure(fig, height=510)
+    fig.update_layout(showlegend=False, xaxis_title="Unemployment rate (% of labor force)",
+                      yaxis_title=None)
+    return real_figure_style(fig, height=615, horizontal=True)
 
 
 def country_card(country):
-    data = COUNTRY_DATA[country]
-
+    context = COUNTRY_CONTEXT.get(country, {
+        "community": "National labor market",
+        "story": "Consider which communities may experience changes not visible in a national rate."
+    })
+    rate = (df.loc[(df["country"] == country) & (df["year"] == 2020),
+                   "wb_unemployment_rate"].dropna())
+    rate_caption = f"2020 unemployment rate: {rate.iloc[0]:.1f}%" if not rate.empty else "2020 rate unavailable"
     return html.Div([
         html.Div([
-            html.Span(
-                country,
-                className="employment-country-name",
-            ),
-            html.Span(
-                data["community"],
-                className="employment-community-label",
-            ),
+            html.Span(country, className="employment-country-name"),
+            html.Span(context["community"], className="employment-community-label"),
         ], className="employment-country-header"),
-        html.P(data["story"], className="employment-country-story"),
+        html.P(rate_caption, className="employment-observed-rate"),
+        html.P(context["story"], className="employment-country-story"),
     ], className="employment-country-card")
 
 
 # ============================================================
-# PAGE LAYOUT
+# PAGE LAYOUT — original page structure and CSS classes retained
 # ============================================================
 
 layout = html.Div(
@@ -402,13 +264,13 @@ layout = html.Div(
         ], className="employment-hero"),
 
         html.Div([
-            html.Strong("IMPORTANT · MOCK DATA"),
+            html.Strong("DATA SOURCE & LIMITATIONS"),
             html.P(
-                "Every numerical value on this page is illustrative and "
-                "has been created for layout and interaction testing. "
-                "Country stories are hypotheses to investigate, not "
-                "verified findings. Replace all values with sourced "
-                "observations and validate the comparisons before presenting."
+                "Charts and 2020 unemployment rates use the cleaned project dataset "
+                "(World Bank unemployment indicator). The community descriptions "
+                "are illustrative scenarios, not verified findings. National "
+                "unemployment rates do not capture changes in hours or income; "
+                "these comparisons do not establish causation."
             ),
         ], className="employment-container employment-data-note reveal"),
 
@@ -440,9 +302,8 @@ layout = html.Div(
                             className="employment-panel-title",
                         ),
                         html.P(
-                            "Select countries to compare the illustrative "
-                            "unemployment trajectory before, during and after "
-                            "the initial pandemic shock.",
+                            "Select countries to compare measured annual unemployment "
+                            "rates before, during and after the initial pandemic shock.",
                             className="employment-panel-description",
                         ),
                         dcc.Checklist(
@@ -451,28 +312,20 @@ layout = html.Div(
                                 {"label": country, "value": country}
                                 for country in COUNTRIES
                             ],
-                            value=[
-                                "United States",
-                                "Germany",
-                                "China",
-                                "The Gambia",
-                            ],
+                            value=DEFAULT_UNEMPLOYMENT,
                             inline=True,
                             className="employment-country-filter",
                             labelClassName="employment-filter-chip",
                         ),
                         dcc.Graph(
                             id="employment-unemployment-chart",
-                            figure=unemployment_chart([
-                                "United States",
-                                "Germany",
-                                "China",
-                                "The Gambia",
-                            ]),
+                            className="employment-real-graph",
+                            style={"height": "540px", "width": "100%"},
+                            figure=unemployment_chart(DEFAULT_UNEMPLOYMENT),
                             config={"displayModeBar": False, "responsive": True},
                         ),
                         html.P(
-                            "Illustrative annual unemployment rates (%)",
+                            "World Bank annual unemployment rate (% of labor force) · 2018–2024",
                             className="employment-chart-footnote",
                         ),
                     ], className="employment-panel"),
@@ -492,10 +345,10 @@ layout = html.Div(
                             className="employment-section-title",
                         ),
                         html.P(
-                            "A national rate can hide the experience of a "
-                            "market trader, a factory worker, a hospitality "
-                            "employee or a family relying on seasonal income. "
-                            "Explore the communities this analysis will investigate.",
+                            "These cards combine observed national unemployment rates in "
+                            "2020 with examples of communities that might be affected. "
+                            "The community descriptions are illustrative, not "
+                            "country-specific research findings.",
                             className="employment-section-description",
                         ),
                     ]),
@@ -520,19 +373,18 @@ layout = html.Div(
                             className="employment-section-title",
                         ),
                         html.P(
-                            "A job count can recover while hours, pay, security "
-                            "or the quality of work remain different. The index "
-                            "below is designed to distinguish the employment "
-                            "level from the unemployment rate.",
+                            "An unemployment rate can return to its 2019 level while "
+                            "working hours, income or job quality remain changed. "
+                            "The chart compares each country with its own 2019 rate.",
                             className="employment-section-description",
                         ),
                     ]),
                 ], className="employment-section-header"),
 
                 html.Div([
-                    html.P("COMPARE EMPLOYMENT LEVELS", className="employment-mini-label"),
+                    html.P("COMPARE WITH 2019", className="employment-mini-label"),
                     html.H3(
-                        "How far did employment fall — and how far did it return?",
+                        "Did unemployment return to its 2019 rate?",
                         className="employment-panel-title",
                     ),
                     dcc.Checklist(
@@ -541,28 +393,20 @@ layout = html.Div(
                             {"label": country, "value": country}
                             for country in COUNTRIES
                         ],
-                        value=[
-                            "United States",
-                            "United Kingdom",
-                            "Japan",
-                            "Lesotho",
-                        ],
+                        value=DEFAULT_RECOVERY,
                         inline=True,
                         className="employment-country-filter",
                         labelClassName="employment-filter-chip",
                     ),
                     dcc.Graph(
                         id="employment-index-chart",
-                        figure=employment_index_chart([
-                            "United States",
-                            "United Kingdom",
-                            "Japan",
-                            "Lesotho",
-                        ]),
+                            className="employment-real-graph",
+                            style={"height": "540px", "width": "100%"},
+                        figure=unemployment_vs_2019_chart(DEFAULT_RECOVERY),
                         config={"displayModeBar": False, "responsive": True},
                     ),
                     html.P(
-                        "Illustrative employment index · 2019 = 100",
+                        "Change in unemployment rate relative to 2019 · percentage points (pp)",
                         className="employment-chart-footnote",
                     ),
                 ], className="employment-panel"),
@@ -573,8 +417,8 @@ layout = html.Div(
                         html.Div([
                             html.H3("The shock"),
                             html.P(
-                                "Identify the lowest point and compare how "
-                                "deeply the employment index falls."
+                                "Identify when unemployment rose above the 2019 baseline "
+                                "and by how many percentage points."
                             ),
                         ]),
                     ], className="employment-insight-card"),
@@ -583,8 +427,8 @@ layout = html.Div(
                         html.Div([
                             html.H3("The rebound"),
                             html.P(
-                                "See whether employment levels return to "
-                                "their pre-pandemic reference."
+                                "See whether unemployment returns to its country's "
+                                "pre-pandemic rate (zero line)."
                             ),
                         ]),
                     ], className="employment-insight-card"),
@@ -615,16 +459,30 @@ layout = html.Div(
                             className="employment-section-title",
                         ),
                         html.P(
-                            "Move through the timeline to compare the "
-                            "illustrative unemployment rate across all ten "
-                            "countries. This is a descriptive comparison, "
-                            "not a ranking of national resilience.",
+                            "First compare the unemployment-rate change in 2020. "
+                            "Then move through the years to compare measured "
+                            "unemployment rates across all ten countries. "
+                            "Neither chart is a causal estimate.",
                             className="employment-section-description",
                         ),
                     ]),
                 ], className="employment-section-header"),
 
                 html.Div([
+                    html.P("THE INITIAL SHOCK · 2019 TO 2020", className="employment-mini-label"),
+                    html.H3("Which unemployment rates changed most in 2020?",
+                            className="employment-panel-title"),
+                    html.P("Difference between 2020 and 2019 unemployment rates, "
+                           "measured in percentage points.",
+                           className="employment-panel-description"),
+                    dcc.Graph(
+                        id="employment-2020-change-chart",
+                        figure=unemployment_shock_chart(),
+                        config={"displayModeBar": False, "responsive": True},
+                        className="employment-real-graph",
+                        style={"height": "650px", "width": "100%"},
+                    ),
+                    html.Div(className="employment-chart-divider"),
                     html.Div([
                         html.P("SELECT YEAR", className="employment-mini-label"),
                         html.Div("2020", id="employment-year-label",
@@ -632,8 +490,8 @@ layout = html.Div(
                     ]),
                     dcc.Slider(
                         id="employment-year-slider",
-                        min=2018,
-                        max=2023,
+                        min=min(YEARS),
+                        max=max(YEARS),
                         step=1,
                         value=2020,
                         marks={
@@ -651,6 +509,8 @@ layout = html.Div(
                     ),
                     dcc.Graph(
                         id="employment-year-chart",
+                            className="employment-real-graph",
+                            style={"height": "615px", "width": "100%"},
                         figure=country_snapshot(2020),
                         config={"displayModeBar": False, "responsive": True},
                     ),
@@ -687,12 +547,11 @@ layout = html.Div(
                         ),
 
                         html.P(
-                            "Employment figures can climb back toward normal "
-                            "while families are still rebuilding their savings, "
-                            "workers are accepting fewer hours, and entire "
-                            "communities are finding their footing again. "
-                            "The numbers may signal a rebound. The human story "
-                            "asks whether people have truly recovered.",
+                            "The unemployment rate measures one part of the labor market. "
+                            "Even when it returns toward its 2019 value, it "
+                            "does not tell us whether wages, hours or job security "
+                            "have recovered. Our country comparisons help frame "
+                            "questions the available data cannot resolve.",
                             className="employment-closing-description",
                         ),
 
@@ -810,7 +669,7 @@ def update_employment_unemployment(selected):
     Input("employment-index-filter", "value"),
 )
 def update_employment_index(selected):
-    return employment_index_chart(selected or [])
+    return unemployment_vs_2019_chart(selected or [])
 
 
 @callback(

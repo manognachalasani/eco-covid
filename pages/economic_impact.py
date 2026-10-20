@@ -1,53 +1,45 @@
 
 # pages/economic_impact.py
 
+from pathlib import Path
+
 from dash import html, dcc, callback, Input, Output
 import plotly.graph_objects as go
-import plotly.express as px
 import pandas as pd
 
+from src.visualizations import (
+    COLORS,
+    plot_gdp_growth,
+    plot_gdp_shock_2020,
+    plot_inflation,
+)
 
-# ============================================================
-# MOCK DATA — REPLACE WITH VERIFIED ANALYSIS RESULTS LATER
-# Values are illustrative, rounded, and NOT research findings.
-# GDP growth = annual real GDP growth (%).
-# Sector values = illustrative change (%).
-# ============================================================
+# Real project dataset. Change this path if your processed CSV has a different name.
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DATA_PATH = PROJECT_ROOT / "data" / "processed" / "final_dataset.csv"
+if not DATA_PATH.is_file():
+    raise FileNotFoundError(
+        f"Processed dataset not found: {DATA_PATH}. "
+        "Update DATA_PATH in pages/economic_impact.py to your actual CSV."
+    )
 
-YEARS = [2018, 2019, 2020, 2021, 2022, 2023]
+df = pd.read_csv(DATA_PATH).dropna(subset=["country"])
+df["year"] = pd.to_numeric(df["year"], errors="coerce")
 
-GDP_DATA = {
-    "World":     [3.3, 2.6, -3.1, 6.0, 3.5, 3.2],
-    "US":        [3.0, 2.6, -2.2, 6.1, 2.5, 2.9],
-    "Euro area": [1.8, 1.6, -6.1, 6.2, 3.5, 0.4],
-    "France":    [1.9, 1.8, -7.5, 6.4, 2.6, 1.1],
-    "China":     [6.7, 6.0, 2.2, 8.4, 3.0, 5.2],
-    "India":     [6.5, 3.9, -5.8, 9.7, 7.0, 8.2],
-}
+YEARS = list(range(2015, 2025))
+COUNTRIES = sorted(df["country"].unique().tolist())
+DEFAULT_COUNTRIES = [
+    country for country in ["United Kingdom", "United States", "China", "Lesotho"]
+    if country in COUNTRIES
+]
 
-# These are illustrative index values, not actual GDP observations.
-# 2019 is the pre-pandemic reference year = 100.
-GDP_INDEX = {
-    "World":     [96.5, 100, 96.9, 102.7, 106.3, 109.7],
-    "US":        [96.1, 100, 97.8, 103.8, 106.4, 109.5],
-    "Euro area": [98.2, 100, 93.9, 99.7, 103.2, 103.6],
-    "France":    [98.1, 100, 92.5, 98.4, 100.9, 102.0],
-    "China":     [100.7, 100, 102.2, 110.8, 114.1, 120.0],
-    "India":     [96.8, 100, 94.2, 103.3, 110.5, 119.6],
-}
 
-SECTOR_DATA = pd.DataFrame({
-    "Sector": [
-        "Travel & tourism",
-        "Hospitality",
-        "Manufacturing",
-        "Retail",
-        "Construction",
-        "Digital services",
-        "Healthcare",
-    ],
-    "Illustrative change (%)": [-55, -38, -12, -15, -10, 18, 12],
-})
+def growth_2020(country):
+    values = df.loc[
+        (df["country"] == country) & (df["year"] == 2020),
+        "wb_gdp_growth",
+    ].dropna()
+    return f"{values.iloc[0]:+.1f}%" if not values.empty else "N/A"
 
 
 # ============================================================
@@ -63,14 +55,7 @@ CORAL = "#FF806E"
 PURPLE = "#A99BFF"
 GREEN = "#79E2B3"
 
-COUNTRY_COLORS = {
-    "World": CYAN,
-    "US": CORAL,
-    "Euro area": PURPLE,
-    "France": "#FFBD69",
-    "China": GREEN,
-    "India": "#F08BC5",
-}
+COUNTRY_COLORS = COLORS
 
 CHART_CONFIG = {
     "displayModeBar": False,
@@ -120,163 +105,70 @@ def base_figure(fig, height=360):
     return fig
 
 
-def growth_line(selected_regions):
-    fig = go.Figure()
-
-    for region in selected_regions:
-        fig.add_trace(go.Scatter(
-            x=YEARS,
-            y=GDP_DATA[region],
-            name=region,
-            mode="lines+markers",
-            line=dict(
-                color=COUNTRY_COLORS[region],
-                width=3,
-                shape="spline",
-            ),
-            marker=dict(size=7),
-            hovertemplate=(
-                "<b>%{fullData.name}</b><br>"
-                "%{x}: %{y:.1f}%<extra></extra>"
-            ),
-        ))
-
-    fig.add_hline(
-        y=0,
-        line_dash="dot",
-        line_color="rgba(255,255,255,0.35)",
-    )
+def real_chart_style(fig, height=None):
+    """Adapt the real Plotly figures to the page's dark cinematic theme."""
     fig.update_layout(
+        template="plotly_dark",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(family="Inter, Plus Jakarta Sans, sans-serif", color=TEXT, size=12),
         title=None,
-        xaxis=dict(
-            tickmode="array",
-            tickvals=YEARS,
-            title=None,
-        ),
-        yaxis_title="Annual real GDP growth (%)",
+        hoverlabel=dict(bgcolor="#1C2940", font_color=TEXT),
     )
-    return base_figure(fig, 380)
+    if height is not None:
+        fig.update_layout(height=height)
+    fig.update_xaxes(tickfont=dict(color=MUTED), gridcolor="rgba(167,178,200,0.12)")
+    fig.update_yaxes(tickfont=dict(color=MUTED), gridcolor="rgba(167,178,200,0.12)")
+    return fig
+
+
+def growth_line(selected_regions):
+    countries = [country for country in (selected_regions or []) if country in COUNTRIES]
+    fig = plot_gdp_growth(df, countries=countries)
+    # The original design uses a half-width card; 2x2 small multiples fit four countries.
+    nrows = max(1, (len(countries) + 1) // 2)
+    fig = real_chart_style(fig, height=max(540, 290 * nrows + 125))
+    fig.update_layout(margin=dict(l=65, r=35, t=90, b=65))
+    return fig
 
 
 def year_snapshot(year):
-    index = YEARS.index(year)
-    regions = list(GDP_DATA.keys())
-    values = [GDP_DATA[r][index] for r in regions]
-
-    ordered = sorted(
-        zip(regions, values),
-        key=lambda item: item[1],
-    )
-    labels = [x[0] for x in ordered]
-    data = [x[1] for x in ordered]
-
-    colors = [
-        COUNTRY_COLORS[r] if value >= 0 else CORAL
-        for r, value in ordered
-    ]
-
+    """Real annual GDP growth comparison for the selected year."""
+    data = df.loc[df["year"] == year, ["country", "wb_gdp_growth"]].dropna()
+    data = data.drop_duplicates("country").sort_values("wb_gdp_growth")
     fig = go.Figure(go.Bar(
-        x=data,
-        y=labels,
+        x=data["wb_gdp_growth"],
+        y=data["country"],
         orientation="h",
-        marker=dict(
-            color=colors,
-            line=dict(width=0),
-        ),
-        text=[f"{v:+.1f}%" for v in data],
+        marker_color=[COUNTRY_COLORS.get(c, CYAN) for c in data["country"]],
+        text=[f"{v:+.1f}%" for v in data["wb_gdp_growth"]],
         textposition="outside",
         cliponaxis=False,
-        hovertemplate="%{y}: %{x:.1f}%<extra></extra>",
+        hovertemplate="%{y}: %{x:.2f}%<extra></extra>",
     ))
-
-    fig.add_vline(
-        x=0,
-        line_color="rgba(255,255,255,0.4)",
-    )
+    fig.add_vline(x=0, line_color="rgba(255,255,255,0.4)")
+    fig = real_chart_style(fig, height=540)
     fig.update_layout(
         showlegend=False,
         xaxis_title="Annual real GDP growth (%)",
         yaxis_title=None,
-        xaxis=dict(zeroline=False),
+        margin=dict(l=190, r=65, t=35, b=55),
     )
-    return base_figure(fig, 360)
+    return fig
 
 
-def recovery_chart(selected_regions):
-    fig = go.Figure()
-
-    for region in selected_regions:
-        fig.add_trace(go.Scatter(
-            x=YEARS,
-            y=GDP_INDEX[region],
-            name=region,
-            mode="lines+markers",
-            line=dict(
-                color=COUNTRY_COLORS[region],
-                width=2.7,
-                shape="spline",
-            ),
-            marker=dict(size=6),
-            hovertemplate=(
-                "<b>%{fullData.name}</b><br>"
-                "%{x}: index %{y:.1f}<extra></extra>"
-            ),
-        ))
-
-    fig.add_hline(
-        y=100,
-        line_dash="dash",
-        line_color="#FFFFFF",
-        annotation_text="2019 baseline",
-        annotation_font_color=MUTED,
-    )
-    fig.update_layout(
-        xaxis=dict(tickmode="array", tickvals=YEARS),
-        yaxis_title="Illustrative GDP index (2019 = 100)",
-    )
-    return base_figure(fig, 380)
+def gdp_shock_chart():
+    fig = plot_gdp_shock_2020(df)
+    fig = real_chart_style(fig, height=660)
+    fig.update_layout(margin=dict(l=190, r=35, t=50, b=65))
+    return fig
 
 
-def sector_bars(view):
-    data = SECTOR_DATA.copy()
-
-    if view == "Winners":
-        data = data[data["Illustrative change (%)"] > 0]
-    elif view == "Losers":
-        data = data[data["Illustrative change (%)"] < 0]
-
-    data = data.sort_values("Illustrative change (%)")
-
-    colors = [
-        GREEN if value >= 0 else CORAL
-        for value in data["Illustrative change (%)"]
-    ]
-
-    fig = go.Figure(go.Bar(
-        x=data["Illustrative change (%)"],
-        y=data["Sector"],
-        orientation="h",
-        marker_color=colors,
-        text=[
-            f"{value:+.0f}%"
-            for value in data["Illustrative change (%)"]
-        ],
-        textposition="outside",
-        cliponaxis=False,
-        hovertemplate=(
-            "%{y}<br>Illustrative change: %{x:+.0f}%<extra></extra>"
-        ),
-    ))
-    fig.add_vline(
-        x=0,
-        line_color="rgba(255,255,255,0.45)",
-    )
-    fig.update_layout(
-        showlegend=False,
-        xaxis_title="Illustrative change (%)",
-        yaxis_title=None,
-    )
-    return base_figure(fig, max(250, 48 * len(data) + 70))
+def inflation_chart():
+    fig = plot_inflation(df)
+    fig = real_chart_style(fig, height=700)
+    fig.update_layout(margin=dict(l=190, r=35, t=55, b=70))
+    return fig
 
 
 # ============================================================
@@ -316,6 +208,7 @@ def panel(children, extra_class=""):
 
 # ============================================================
 # PAGE LAYOUT
+# Layout fixes for large Plotly plots live in assets/economic_impact_fix.css.
 # ============================================================
 
 layout = html.Div(
@@ -430,10 +323,9 @@ html.Div(
         html.Div([
             html.Span("DATA NOTE", className="data-note-label"),
             html.P(
-                "This is a storytelling prototype. All displayed chart "
-                "values are illustrative mock data, not verified findings. "
-                "Replace them with results from your finalized dataset "
-                "before drawing conclusions.",
+                "Figures use the project's cleaned dataset and World Bank "
+                "GDP growth and inflation indicators. Comparisons are "
+                "descriptive; they do not establish COVID-19 causation.",
                 className="data-note-text",
             ),
         ], className="story-container data-note reveal"),
@@ -452,16 +344,16 @@ html.Div(
                     html.H3("One crisis. Different trajectories.", className="panel-title"),
                     html.P(
                         "Choose the economies you want to compare. "
-                        "The lines show illustrative annual real GDP growth.",
+                        "Each panel shows annual real GDP growth from the dataset.",
                         className="panel-description",
                     ),
                     dcc.Checklist(
                         id="growth-region-filter",
                         options=[
                             {"label": r, "value": r}
-                            for r in GDP_DATA
+                            for r in COUNTRIES
                         ],
-                        value=["World", "US", "France", "China"],
+                        value=DEFAULT_COUNTRIES,
                         inline=True,
                         className="story-checklist",
                         inputClassName="story-check-input",
@@ -469,43 +361,41 @@ html.Div(
                     ),
                     dcc.Graph(
                         id="growth-line-chart",
-                        figure=growth_line(
-                            ["World", "US", "France", "China"]
-                        ),
+                        figure=growth_line(DEFAULT_COUNTRIES),
                         config=CHART_CONFIG,
-                        className="story-graph",
+                        className="story-graph story-graph-auto",
                     ),
                     html.P(
-                        "Illustrative values · annual real GDP growth (%)",
+                        "Source: cleaned project dataset · annual real GDP growth (%)",
                         className="chart-footnote",
                     ),
-                ], className="story-panel chart-panel"),
+                ], className="story-panel chart-panel story-chart-panel-full"),
 
                 html.Div([
                     html.P("THE CRISIS IN NUMBERS", className="mini-eyebrow"),
                     html.H3("The shock was not uniform.", className="panel-title"),
                     html.P(
-                        "These example indicators establish the questions "
-                        "the final analysis should answer.",
+                        "Observed annual real GDP growth rates in 2020, "
+                        "taken from the project dataset.",
                         className="panel-description",
                     ),
                     html.Div([
                         metric(
-                            "Global growth · 2020",
-                            "−3.1%",
-                            "Illustrative annual contraction",
+                            "United Kingdom · 2020",
+                            growth_2020("United Kingdom"),
+                            "Real GDP growth",
                             "coral",
                         ),
                         metric(
-                            "France · 2020",
-                            "−7.5%",
-                            "Illustrative contraction",
+                            "United States · 2020",
+                            growth_2020("United States"),
+                            "Real GDP growth",
                             "purple",
                         ),
                         metric(
                             "China · 2020",
-                            "+2.2%",
-                            "Illustrative positive growth",
+                            growth_2020("China"),
+                            "Real GDP growth",
                             "green",
                         ),
                     ], className="story-metrics"),
@@ -518,7 +408,7 @@ html.Div(
                         ),
                     ], className="story-callout"),
                 ], className="story-panel insight-panel"),
-            ], className="story-two-column"),
+            ], className="story-two-column story-two-column-single"),
             section_id="the-shock",
         ),
 
@@ -539,8 +429,8 @@ html.Div(
                     ]),
                     dcc.Slider(
                         id="snapshot-year",
-                        min=2018,
-                        max=2023,
+                        min=2015,
+                        max=2024,
                         step=1,
                         value=2020,
                         marks={
@@ -561,7 +451,7 @@ html.Div(
                     id="year-snapshot-chart",
                     figure=year_snapshot(2020),
                     config=CHART_CONFIG,
-                    className="story-graph",
+                    className="story-graph story-graph-auto",
                 ),
                 html.Div([
                     html.Div([
@@ -575,181 +465,129 @@ html.Div(
                     html.Div([
                         html.Span("03", className="insight-index"),
                         html.P(
-                            "Test whether the same pattern appears "
-                            "in your finalized data."
+                            "Compare 2020 with the pre-pandemic years."
                         ),
                     ], className="insight-step"),
                 ], className="insight-steps"),
-            ], className="story-panel chart-panel"),
+            ], className="story-panel chart-panel story-chart-panel-full"),
             section_id="country-comparison",
             extra_class="story-section-muted",
         ),
 
-        # ACT 3 — REBOUND VS RECOVERY
+        # ACT 3 — GDP SHOCK VS. PRE-PANDEMIC BASELINE
         story_section(
             "03",
-            "AFTER THE FALL",
-            "A rebound is not the same as recovery",
-            "Growth measures how quickly output changes. An index compares "
-            "the level of output against a reference year. A strong growth "
-            "rate can follow a deep decline without immediately restoring "
-            "the lost ground.",
+            "THE 2020 SHOCK",
+            "How far did growth fall below normal?",
+            "Annual growth in 2020 is compared with each country's average "
+            "growth rate in 2015–2019. The difference is measured in "
+            "percentage points, not as a percentage change.",
             html.Div([
                 html.Div([
-                    html.P("FOLLOW THE RECOVERY", className="mini-eyebrow"),
-                    html.H3(
-                        "Who returned to the 2019 baseline?",
-                        className="panel-title",
-                    ),
+                    html.P("COMPARE THE SHOCK", className="mini-eyebrow"),
+                    html.H3("One pandemic. Unequal economic shocks.", className="panel-title"),
                     html.P(
-                        "The horizontal reference line marks the illustrative "
-                        "pre-pandemic level. Select economies to follow the "
-                        "path of the index.",
+                        "A negative value means 2020 growth was below the "
+                        "country's pre-pandemic average.",
                         className="panel-description",
                     ),
-                    dcc.Checklist(
-                        id="recovery-region-filter",
-                        options=[
-                            {"label": r, "value": r}
-                            for r in GDP_INDEX
-                        ],
-                        value=["World", "France", "US", "China"],
-                        inline=True,
-                        className="story-checklist",
-                        labelClassName="story-check-label",
-                    ),
                     dcc.Graph(
-                        id="recovery-line-chart",
-                        figure=recovery_chart(
-                            ["World", "France", "US", "China"]
-                        ),
+                        id="gdp-shock-chart",
+                        figure=gdp_shock_chart(),
                         config=CHART_CONFIG,
-                        className="story-graph",
+                        className="story-graph story-graph-auto",
                     ),
                     html.P(
-                        "Illustrative index only · 2019 = 100",
+                        "2020 GDP growth minus mean growth (2015–2019), in percentage points",
                         className="chart-footnote",
                     ),
-                ], className="story-panel chart-panel"),
+                ], className="story-panel chart-panel story-chart-panel-full"),
                 html.Div([
                     html.P("READ THE CHART", className="mini-eyebrow"),
-                    html.H3("Two different questions.", className="panel-title"),
+                    html.H3("What does the shock measure?", className="panel-title"),
                     html.Div([
                         html.Span("01", className="explain-number"),
                         html.Div([
-                            html.H4("Growth"),
-                            html.P(
-                                "How much did output change compared "
-                                "with the previous year?"
-                            ),
+                            html.H4("Pre-pandemic baseline"),
+                            html.P("Average annual real GDP growth from 2015 to 2019."),
                         ]),
                     ], className="explain-row"),
                     html.Div([
                         html.Span("02", className="explain-number"),
                         html.Div([
-                            html.H4("Recovery"),
-                            html.P(
-                                "How far has output returned relative "
-                                "to its pre-crisis level?"
-                            ),
+                            html.H4("Deviation in 2020"),
+                            html.P("2020 growth minus the reference average, in percentage points."),
                         ]),
                     ], className="explain-row"),
                     html.Div([
                         html.Span("03", className="explain-number"),
                         html.Div([
-                            html.H4("Resilience"),
+                            html.H4("Interpretation"),
                             html.P(
-                                "Did output recover quickly, slowly, "
-                                "or follow a different path altogether?"
+                                "The deviation describes the shock; it does not "
+                                "isolate the pandemic from other influences."
                             ),
                         ]),
                     ], className="explain-row"),
                 ], className="story-panel explanation-panel"),
-            ], className="story-two-column"),
+            ], className="story-two-column story-two-column-single"),
             section_id="the-rebound",
         ),
 
-        # ACT 4 — INDUSTRIES
+        # ACT 4 — INFLATION
         story_section(
             "04",
             "BEYOND GDP",
-            "Some industries stopped. Others adapted.",
-            "National GDP can conceal very different experiences. Restrictions "
-            "hit travel and hospitality directly, while some digital services "
-            "benefited from a rapid shift to remote work and online activity. "
-            "The final dataset should test these patterns rather than assume them.",
+            "Inflation: the next economic challenge",
+            "The 2020 GDP shock was followed by substantial changes in prices. "
+            "Compare annual inflation in 2019 and 2022 across countries. "
+            "Inflation in 2022 also reflects energy and other global shocks.",
             html.Div([
                 html.Div([
-                    html.P("COMPARE INDUSTRIES", className="mini-eyebrow"),
-                    html.H3(
-                        "The shock beneath the headline",
-                        className="panel-title",
-                    ),
+                    html.P("COMPARE INFLATION", className="mini-eyebrow"),
+                    html.H3("Price pressures diverged.", className="panel-title"),
                     html.P(
-                        "Switch between the illustrative sector groups. "
-                        "Positive values represent an increase; negative "
-                        "values represent a decline.",
+                        "The connected markers show inflation rates in 2019 "
+                        "and 2022 for each country.",
                         className="panel-description",
                     ),
-                    dcc.RadioItems(
-                        id="sector-view",
-                        options=[
-                            {"label": "All sectors", "value": "All"},
-                            {"label": "Positive", "value": "Winners"},
-                            {"label": "Negative", "value": "Losers"},
-                        ],
-                        value="All",
-                        inline=True,
-                        className="story-checklist",
-                        labelClassName="story-check-label",
-                    ),
                     dcc.Graph(
-                        id="sector-bar-chart",
-                        figure=sector_bars("All"),
+                        id="inflation-comparison-chart",
+                        figure=inflation_chart(),
                         config=CHART_CONFIG,
-                        className="story-graph",
+                        className="story-graph story-graph-auto",
                     ),
                     html.P(
-                        "Illustrative values only · replace with sourced "
-                        "sector indicators and a defined comparison period.",
+                        "World Bank annual inflation (%) · 2019 versus 2022",
                         className="chart-footnote",
                     ),
-                ], className="story-panel chart-panel"),
+                ], className="story-panel chart-panel story-chart-panel-full"),
                 html.Div([
-                    html.P("WHAT TO INVESTIGATE", className="mini-eyebrow"),
-                    html.H3("Look beyond the average.", className="panel-title"),
+                    html.P("WHAT TO CONSIDER", className="mini-eyebrow"),
+                    html.H3("Read inflation carefully.", className="panel-title"),
                     html.Div([
                         html.Span("A", className="sector-letter"),
                         html.Div([
-                            html.H4("Exposure"),
-                            html.P(
-                                "Which sectors depended on physical "
-                                "movement or in-person contact?"
-                            ),
+                            html.H4("Price changes"),
+                            html.P("Inflation measures the rate of price increases, not the price level."),
                         ]),
                     ], className="sector-question"),
                     html.Div([
                         html.Span("B", className="sector-letter"),
                         html.Div([
-                            html.H4("Adaptation"),
-                            html.P(
-                                "Which sectors could shift to digital "
-                                "delivery or remote work?"
-                            ),
+                            html.H4("Different national patterns"),
+                            html.P("Compare how the rates changed, rather than assuming one global trend."),
                         ]),
                     ], className="sector-question"),
                     html.Div([
                         html.Span("C", className="sector-letter"),
                         html.Div([
-                            html.H4("Unequal impact"),
-                            html.P(
-                                "Did countries with different sector "
-                                "mixes experience different shocks?"
-                            ),
+                            html.H4("No single cause"),
+                            html.P("Pandemic disruption was not the only driver of inflation in 2022."),
                         ]),
                     ], className="sector-question"),
                 ], className="story-panel explanation-panel"),
-            ], className="story-two-column"),
+            ], className="story-two-column story-two-column-single"),
             section_id="industry-impact",
         ),
 
@@ -774,9 +612,9 @@ html.Div(
                         ),
                         html.P(
                             "The global shock provides the starting point, not "
-                            "the whole story. To understand its lasting economic "
-                            "impact, we must compare the depth of contraction, "
-                            "the pace of recovery and the industries behind the totals.",
+                            "the whole story. We compare annual growth, the "
+                            "deviation from pre-pandemic trends, and subsequent "
+                            "inflation. The next chapter explores unemployment.",
                             className="closing-description",
                         ),
 
@@ -800,14 +638,14 @@ html.Div(
                                 html.Div(
                                     [
                                         html.Span("03", className="closing-number"),
-                                        html.P("Trace recovery"),
+                                        html.P("Compare with 2015–2019"),
                                     ],
                                     className="closing-step",
                                 ),
                                 html.Div(
                                     [
                                         html.Span("04", className="closing-number"),
-                                        html.P("Uncover sector differences"),
+                                        html.P("Track inflation"),
                                     ],
                                     className="closing-step",
                                 ),
@@ -891,17 +729,3 @@ def update_snapshot(year):
     return str(year), year_snapshot(year)
 
 
-@callback(
-    Output("recovery-line-chart", "figure"),
-    Input("recovery-region-filter", "value"),
-)
-def update_recovery_chart(regions):
-    return recovery_chart(regions or [])
-
-
-@callback(
-    Output("sector-bar-chart", "figure"),
-    Input("sector-view", "value"),
-)
-def update_sector_chart(view):
-    return sector_bars(view or "All")
