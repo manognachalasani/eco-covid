@@ -2,7 +2,21 @@
 """Callbacks are kept separate from page layouts to keep app.py readable."""
 
 from dash import Input, Output, State, html
-from src.visualizations import unemployment_line
+from src.visualizations import plot_unemployment
+import pandas as pd
+from pathlib import Path
+
+
+# Load the same dataset used by the application.
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+DATA_PATH = PROJECT_ROOT / "final_dataset.csv"
+
+if not DATA_PATH.exists():
+    raise FileNotFoundError(
+        f"Dataset not found: {DATA_PATH}"
+    )
+
+df = pd.read_csv(DATA_PATH)
 
 
 def register_callbacks(app):
@@ -12,7 +26,11 @@ def register_callbacks(app):
         Input("jobs-region-filter", "value"),
     )
     def update_jobs(regions):
-        return unemployment_line(regions or ["US"])
+        # Keep the existing region filter and use real dataset values.
+        return plot_unemployment(
+            df,
+            countries=regions or None,
+        )
 
     @app.callback(
         Output("takeaway-preview", "children"),

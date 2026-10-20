@@ -1,12 +1,27 @@
 
 from dash import html, dcc
 
-from src.visualizations import recovery_line, recovery_index_bars
+import pandas as pd
+from pathlib import Path
+
+from src.visualizations import plot_gdp_index, plot_gdp_recovery_2024
 
 
-# Reuse the existing charts, but match the cinematic story theme.
-recovery_path_fig = recovery_line()
-sector_recovery_fig = recovery_index_bars()
+# Load the real dataset from the project root.
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+DATA_PATH = PROJECT_ROOT / "final_dataset.csv"
+
+if not DATA_PATH.exists():
+    raise FileNotFoundError(
+        f"Dataset not found at {DATA_PATH}. "
+        "Place final_dataset.csv in the project root beside app.py."
+    )
+
+df = pd.read_csv(DATA_PATH)
+
+# Generate recovery charts using actual dataset values.
+recovery_path_fig = plot_gdp_index(df)
+sector_recovery_fig = plot_gdp_recovery_2024(df)
 
 for fig in (recovery_path_fig, sector_recovery_fig):
     fig.update_layout(

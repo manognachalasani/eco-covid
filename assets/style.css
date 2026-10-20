@@ -505,3 +505,214 @@ body:has(#app-root.theme-light) {
 .theme-dark .Select-option.is-selected { background-color: #3558a8; color: #fff; }
 .theme-dark .Select--multi .Select-value-icon { border-right-color: #526582; }
 .theme-dark .Select--multi .Select-value-icon:hover { background-color: #304568; color: #fff; }
+
+
+/* Overview: real-data storytelling section */
+.overview-data-section {
+    padding-top: 3rem;
+    padding-bottom: 4rem;
+}
+
+.overview-data-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.overview-chart-panel {
+    min-width: 0;
+    padding: 1.25rem;
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+.overview-chart-panel h3 {
+    margin-bottom: 0.5rem;
+}
+
+.overview-chart-panel p {
+    line-height: 1.65;
+    color: #64748b;
+}
+
+.overview-chart {
+    width: 100%;
+}
+
+.overview-chart-wide {
+    grid-column: 1 / -1;
+}
+
+.overview-data-caveat {
+    margin-top: 1.5rem;
+    color: #64748b;
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+    .overview-data-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .overview-chart-wide {
+        grid-column: auto;
+    }
+}
+
+/* Overview: actual-data charts */
+.overview-data-section {
+    padding-top: 3rem;
+    padding-bottom: 4rem;
+}
+
+.overview-data-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.overview-chart-panel {
+    min-width: 0;
+    padding: 1.25rem;
+    border-radius: 18px;
+    overflow: hidden;
+}
+
+.overview-chart-panel h3 {
+    margin-bottom: 0.5rem;
+}
+
+.overview-chart-panel p,
+.overview-data-note,
+.overview-data-caveat {
+    color: #64748b;
+    line-height: 1.7;
+}
+
+.overview-chart-wide {
+    grid-column: 1 / -1;
+}
+
+.overview-data-note,
+.overview-data-caveat {
+    margin-top: 1.25rem;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .overview-data-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .overview-chart-wide {
+        grid-column: auto;
+    }
+}
+
+
+/* ==========================================================
+   OVERVIEW CHARTS — FINAL LAYOUT FIX
+   ========================================================== */
+
+.overview-data-section,
+.overview-data-section .overview-content-width,
+.overview-data-grid {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-sizing: border-box;
+}
+
+.overview-data-section {
+    padding-bottom: 64px;
+}
+
+.overview-data-section .overview-content-width {
+    width: min(1440px, calc(100% - 48px));
+    max-width: 1440px;
+    margin-inline: auto;
+}
+
+.overview-data-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 24px;
+    width: 100%;
+    margin-top: 28px;
+}
+
+.overview-chart-panel {
+    width: 100%;
+    min-width: 0;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding: 24px;
+    overflow: visible !important;
+    box-sizing: border-box;
+    align-self: start;
+}
+
+.overview-chart-panel.overview-chart-wide {
+    grid-column: 1 / -1;
+}
+
+.overview-chart-panel h3 {
+    margin: 0 0 12px;
+    line-height: 1.45;
+    color: #F4F7FF;
+}
+
+.overview-chart-panel p {
+    margin: 0 0 18px;
+    line-height: 1.65;
+    color: #A7B2C8;
+}
+
+.overview-chart,
+.overview-chart .dash-graph,
+.overview-chart .js-plotly-plot,
+.overview-chart .plot-container {
+    display: block;
+    width: 100% !important;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.overview-chart .js-plotly-plot,
+.overview-chart .plot-container,
+.overview-chart .svg-container {
+    overflow: visible !important;
+}
+
+.overview-data-caveat {
+    clear: both;
+    margin: 32px 0 0;
+    line-height: 1.8;
+    color: #A7B2C8;
+}
+
+@media (max-width: 900px) {
+    .overview-data-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .overview-chart-panel.overview-chart-wide {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .overview-data-section .overview-content-width {
+        width: calc(100% - 28px);
+    }
+
+    .overview-chart-panel {
+        padding: 16px;
+    }
+}
