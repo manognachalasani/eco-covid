@@ -104,6 +104,12 @@ html.Div(className="p-grid"),
             href="/pandemic-analysis",
             className="overview-secondary-link",
         ),
+
+        dcc.Link(
+    "Begin with Chapter One  →",
+    href="/pandemic-response",
+    className="p-chapter-button",
+),
     ],
     className="hero-actions overview-hero-actions",
 ),
@@ -367,31 +373,39 @@ html.Div(className="p-grid"),
         html.Section(
             className="p-ending overview-ending",
             children=[
-                html.Div(
-                    "THE STORY STARTS HERE",
-                    className="p-kicker",
-                ),
-                html.H2(
-                    [
-                        "Ready to explore ",
-                        html.Br(),
-                        html.Span(
-                            "what changed?",
-                            className="p-accent",
-                        ),
-                    ],
-                    className="overview-section-title",
-                ),
-                html.P(
-                    "Start with the first chapter and follow the story "
-                    "from the initial shock to the long road back.",
-                    className="overview-section-intro",
-                ),
-                dcc.Link(
-                    "Begin with Chapter One  →",
-                    href="/pandemic-response",
-                    className="p-chapter-button",
-                ),
+               # CLOSING CONCLUSION
+html.Div(
+    className="p-ending overview-ending",
+    children=[
+        html.Div(
+            "THE BIGGER PICTURE",
+            className="p-kicker",
+        ),
+
+        html.H2(
+            "One crisis. A world transformed.",
+        ),
+
+        html.P(
+            "The pandemic was more than a public health emergency. "
+            "It disrupted economies, reshaped industries, changed how "
+            "people lived and worked, and challenged countries in "
+            "different ways. Its effects did not end when lockdowns did."
+        ),
+
+        html.P(
+            "Understanding what happened means looking beyond the "
+            "headlines — at the data, the inequalities it revealed, "
+            "and the different paths countries took toward recovery."
+        ),
+
+        html.Div(
+            "PANDEMISCOPE  /  UNDERSTANDING THE IMPACT",
+            className="overview-ending-note",
+        ),
+    ],
+),
+                
             ],
         ),
 
