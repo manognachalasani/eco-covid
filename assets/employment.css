@@ -1536,3 +1536,43 @@
     }
 
 }
+
+
+/* Chapter 3 · Real-data chart layout fixes (keep original styles above). */
+#employment-story .employment-section,
+#employment-story .employment-container,
+#employment-story .employment-panel {
+    height: auto !important;
+    max-height: none !important;
+    min-width: 0;
+}
+#employment-story .employment-panel {
+    position: relative;
+    overflow: visible;
+}
+#employment-story .employment-real-graph {
+    display: block;
+    position: relative;
+    width: 100% !important;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    margin: 12px 0 18px;
+}
+#employment-story .employment-real-graph .js-plotly-plot,
+#employment-story .employment-real-graph .plot-container {
+    max-width: 100%;
+}
+#employment-story .employment-chart-divider {
+    border-top: 1px solid rgba(140, 164, 201, .22);
+    margin: 36px 0;
+}
+#employment-story .employment-observed-rate {
+    color: var(--emp-cyan);
+    font-weight: 800;
+    font-size: .93rem;
+    margin: 0 0 10px;
+}
+@media (max-width: 600px) {
+    #employment-story .employment-real-graph {overflow-x: auto;}
+}

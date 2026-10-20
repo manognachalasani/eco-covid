@@ -1,0 +1,58 @@
+/* PandemiScope · Chapter 2 layout repair.
+   Scoped to this page to avoid altering teammates' pages. */
+#economic-story .story-section,
+#economic-story .story-container,
+#economic-story .story-panel,
+#economic-story .story-two-column {
+    height: auto !important;
+    max-height: none !important;
+    min-width: 0;
+}
+
+/* One column lets the 2x2 GDP panels and horizontal bar charts breathe. */
+#economic-story .story-two-column-single {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 28px !important;
+    align-items: stretch !important;
+}
+
+#economic-story .story-two-column-single > .story-panel,
+#economic-story .story-chart-panel-full {
+    position: relative !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+    overflow: visible !important;
+}
+
+/* Plotly graphs must use their declared figure height, not a fixed 360px card. */
+#economic-story .story-graph-auto,
+#economic-story .story-graph-auto.dash-graph {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+#economic-story .story-graph-auto .js-plotly-plot,
+#economic-story .story-graph-auto .plot-container,
+#economic-story .story-graph-auto .svg-container {
+    max-width: 100%;
+}
+
+#economic-story .story-graph-auto .main-svg {
+    max-width: 100%;
+}
+
+/* Keep the copy and follow-up cards below the plots. */
+#economic-story .story-panel .story-metrics,
+#economic-story .story-panel .insight-steps {
+    position: relative;
+}
+
+@media (max-width: 700px) {
+    #economic-story .story-two-column-single { gap: 18px !important; }
+    #economic-story .story-panel { padding-left: 12px; padding-right: 12px; }
+}
