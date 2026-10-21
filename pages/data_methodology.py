@@ -111,13 +111,6 @@ SOURCES: tuple[Source, ...] = (
         "217 countries", "Yearly", "Columns start with wb_.",
         "https://data.worldbank.org", "data.worldbank.org",
     ),
-    Source(
-        "TESTED, NOT USED", "Mendeley Data",
-        "Two research datasets were tested, but nothing from them is in the final table.",
-        "OECD / 58 countries", "As published", "They have no usable country column, so they could not be joined.",
-        "https://data.mendeley.com/datasets/gtzzs3659m/1", "data.mendeley.com",
-        used=False,
-    ),
 )
 
 # (time scale, what we do with it, examples)
@@ -190,7 +183,6 @@ JUMP_LINKS: tuple[tuple[str, str], ...] = (
     ("#method-fit", "How they fit"),
     ("#method-measures", "Our measures"),
     ("#method-countries", "The 10 countries"),
-    ("#method-caution", "Keep in mind"),
 )
 
 
@@ -245,7 +237,7 @@ def _intro_overlay() -> html.Div:
 
 def _hero() -> html.Section:
     stats = (
-        ("6", "public sources", "cyan"),
+        ("5", "public sources", "cyan"),
         (f"{N_COUNTRIES_ALL} → {N_COUNTRIES_DASHBOARD}", "countries downloaded, then kept in the dashboard", "purple"),
         (f"{START_YEAR}-{END_YEAR}", "period covered, month by month", "green"),
         (f"{N_COLUMNS}", "columns in the final table", "coral"),
@@ -434,20 +426,6 @@ def _columns_section() -> html.Section:
     )
 
 
-def _caution_section() -> html.Section:
-    cards = html.Div([
-        html.Div([
-            html.Span(f"{i:02d}", className="method-caveat-index"),
-            html.H3(c.title, className="method-caveat-title"),
-            html.P(c.text, className="method-caveat-text"),
-        ], className="method-caveat reveal") for i, c in enumerate(CAVEATS, start=1)
-    ], className="method-caveat-grid")
-    return _section(
-        7, "READ WITH CARE", "What the data cannot tell you",
-        "Good analysis also says where it stops. Keep these points in mind when you read the charts.",
-        [cards], anchor="method-caution",
-    )
-
 
 def _closing() -> html.Section:
     return html.Section(
@@ -483,6 +461,5 @@ def layout() -> html.Div:
         _measures_section(),
         _countries_section(),
         _columns_section(),
-        _caution_section(),
         _closing(),
     ], id=ROOT_ID, className="methodology-story")
