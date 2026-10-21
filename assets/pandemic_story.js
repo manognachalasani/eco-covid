@@ -43,11 +43,8 @@
         });
     }
 
-    function start() {
-        initialisePandemicAnimations();
-
-        const pageChanges = new MutationObserver(() => {
-            function start() {
+    
+function start() {
     removeIntroOverlay();
     initialisePandemicAnimations();
 
@@ -60,14 +57,7 @@
         subtree: true
     });
 }
-            initialisePandemicAnimations();
-        });
 
-        pageChanges.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
-    }
 
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", start);

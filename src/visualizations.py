@@ -207,11 +207,9 @@ def plot_vaccination_rollout(df, countries=None):
 
     fig.update_yaxes(range=[0, 100])
     fig.update_xaxes(
-        range=["2020-12-01", "2023-12-31"],
-        dtick="M6",
-        tickformat="%b %Y"
-    )
-
+    dtick="M6",
+    tickformat="%b %Y"
+)
     return fig
 
 
