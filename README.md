@@ -1,65 +1,129 @@
-# PandemiScope · The Economics of COVID-19
+# Pandemiscope — The Cosmic Archive
 
-A multi-page Plotly Dash project for exploring the economic impact of COVID-19. The current application combines existing illustrative dashboard pages with minimal scaffolds for the planned ten-page architecture.
+**Pandemiscope** is an interactive data storytelling project exploring the COVID-19 pandemic, its public-health and economic consequences, government responses, and the recovery across selected countries.
 
-## Run locally
+Built with Python, Dash and Plotly, the project presents data through interactive visualizations and a chapter-based narrative.
 
-Recommended: Python 3.12.
+## Project Structure
 
-```bash
-python -m venv .venv
+```text
+cdl-project/
+├── assets/                  # CSS, JavaScript and media assets
+├── data/
+│   ├── raw/                 # Original data and data documentation
+│   └── processed/           # Processed dataset used by the dashboard
+├── notebooks/               # Data exploration and analysis
+├── pages/                   # Interactive dashboard chapters
+├── src/                     # Data processing, analysis and visualizations
+├── app.py                   # Application entry point
+├── requirements.txt         # Python dependencies
+└── README.md
 ```
 
-Windows PowerShell:
+## Dashboard Chapters
+
+The dashboard explores the pandemic through the following sections:
+
+- **Overview** — Introduction to the project and the pandemic.
+- **Pandemic Response** — Public-health developments and pandemic response.
+- **Economic Impact** — Changes in economic performance during the pandemic.
+- **Employment** — Employment-related impacts and trends.
+- **Country Explorer** — Country-level comparisons and indicators.
+- **Recovery** — Economic developments following the initial shock.
+- **Data Methodology** — Data sources, preparation and methodological considerations.
+
+## Data
+
+The dashboard uses the processed dataset:
+
+`data/processed/final_dataset.csv`
+
+The `data/raw/README.md` file documents the raw data and its sources.
+
+The `data/raw/` and `data/processed/` directories contain `.gitkeep` files to preserve their structure in Git. These files do not contain datasets.
+
+If the processed dataset is not available after cloning the repository, ensure that `final_dataset.csv` is placed in `data/processed/` before starting the application.
+
+## Notebooks
+
+The `notebooks/` directory contains two Jupyter notebooks:
+
+- `covid_economy_final.ipynb` — Notebook for the project's COVID-19 economic analysis.
+- `exploratory_analysis.ipynb` — Exploratory data analysis.
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3
+- pip
+
+### 1. Clone the repository
+
+```bash
+git clone <repository-url>
+cd cdl-project
+```
+
+Replace `<repository-url>` with the repository's Git URL.
+
+### 2. Create a virtual environment
+
+**Windows (PowerShell):**
 
 ```powershell
-.venv\Scripts\Activate.ps1
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 ```
 
-macOS/Linux:
+**macOS/Linux:**
 
 ```bash
+python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-Install dependencies and run:
+### 3. Install dependencies
 
 ```bash
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
+```
+
+### 4. Check the dataset
+
+Make sure the following file exists:
+
+```text
+data/processed/final_dataset.csv
+```
+
+If it is missing, consult `data/raw/README.md` for information about the source data and preparation process.
+
+### 5. Run the dashboard
+
+From the project root, execute:
+
+```bash
 python app.py
 ```
 
-Open `http://127.0.0.1:8050`.
+Open the local address displayed in the terminal. The default Dash address is usually:
 
-## Page architecture
+`http://127.0.0.1:8050/`
 
-| Page | File | Responsibility |
-|---|---|---|
-| Overview | `pages/overview.py` | Introduce the project and summarize the story |
-| Country Explorer | `pages/country_explorer.py` | Explore and compare countries |
-| Economic Impact | `pages/economic_impact.py` | GDP and broader economic indicators |
-| Employment & Inequality | `pages/employment.py` | Labor-market effects and group differences |
-| Sector Impact | `pages/sector_impact.py` | Compare the shock across industries |
-| Trade & Tourism | `pages/trade_tourism.py` | International trade and tourism disruption |
-| Pandemic & Economy | `pages/pandemic_analysis.py` | Explore pandemic timing and economic indicators |
-| Government Response | `pages/government_response.py` | Economic support measures and policy context |
-| Recovery | `pages/recovery.py` | Compare recovery paths and remaining gaps |
-| Data & Methodology | `pages/data_methodology.py` | Document sources, definitions and limitations |
+To stop the server, press `Ctrl+C` in the terminal.
 
-Navigation is grouped into Discover, Economic Impact, Analysis & Recovery, and About the Data. The shared country and date controls in `app.py` currently save their selections to `dcc.Store(id="global-filters")`. Relevant charts will be connected to this shared state as each page is developed.
+## Technology Stack
 
-## Code organization
+- **Python** — Data processing and application logic
+- **Dash** — Interactive web dashboard
+- **Plotly** — Data visualization
+- **Pandas** — Data manipulation and analysis
+- **CSS and JavaScript** — Styling, transitions and interactive presentation
 
-- `app.py`: application setup, routes, grouped navigation and shared filters.
-- `pages/`: page layouts; each page exposes a `layout()` function.
-- `src/visualizations.py`: existing Plotly chart factories and mock data.
-- `src/callbacks.py`: existing chart interactions and callbacks.
-- `src/data_processing.py`: future data-loading and cleaning functions.
-- `src/analysis.py`: future analysis functions.
-- `assets/style.css`: shared visual styling.
-- `data/raw/` and `data/processed/`: intended locations for raw and processed data.
-- `notebooks/exploratory_analysis.ipynb`: exploratory analysis scaffold.
+## Analytical Scope and Limitations
 
-## Current status and data disclaimer
+The project compares public-health and economic indicators across selected countries and over time. Its analysis aims to identify patterns in pandemic-related disruption and subsequent recovery.
 
-The new pages are intentionally structural placeholders. Their TODO comments describe future content; they do not yet contain complete charts or analyses. Existing chart and KPI values in the original pages are illustrative placeholders, not verified findings. Replace them with sourced observations and show definitions, units and limitations before presenting conclusions.
+Observed changes should be interpreted in their socioeconomic and geopolitical contexts. Associations between pandemic measures and economic outcomes do not, on their own, establish causation. Data availability, missing observations and differences between countries may also affect comparisons.
+
