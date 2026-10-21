@@ -61,11 +61,10 @@ The `notebooks/` directory contains two Jupyter notebooks:
 ### 1. Clone the repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/manognachalasani/eco-covid.git
 cd cdl-project
 ```
 
-Replace `<repository-url>` with the repository's Git URL.
 
 ### 2. Create a virtual environment
 
