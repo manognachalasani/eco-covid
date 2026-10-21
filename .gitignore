@@ -15,6 +15,7 @@ Thumbs.db
 # Local data files (keep directory placeholders)
 data/raw/*
 data/processed/*
+!data/processed/final_dataset.csv
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 
