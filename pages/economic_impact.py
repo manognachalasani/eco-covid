@@ -14,15 +14,24 @@ from src.visualizations import (
     plot_inflation,
 )
 
-# Real project dataset. Change this path if your processed CSV has a different name.
+# Locate the project's actual dataset. In this project it is stored beside app.py
+# as final_dataset.csv, rather than under data/processed/.
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DATA_PATH = PROJECT_ROOT / "data" / "processed" / "final_dataset.csv"
-if not DATA_PATH.is_file():
+DATA_CANDIDATES = [
+    PROJECT_ROOT / "final_dataset.csv",
+    PROJECT_ROOT / "data" / "processed" / "final_dataset.csv",
+]
+DATA_PATH = next((candidate for candidate in DATA_CANDIDATES if candidate.is_file()), None)
+
+if DATA_PATH is None:
+    searched = "\\n".join(str(candidate) for candidate in DATA_CANDIDATES)
     raise FileNotFoundError(
-        f"Processed dataset not found: {DATA_PATH}. "
-        "Update DATA_PATH in pages/economic_impact.py to your actual CSV."
+        "Could not find final_dataset.csv. Checked these locations:\\n"
+        f"{searched}\\n"
+        "Place final_dataset.csv beside app.py or in data/processed/."
     )
 
+print(f"Economic impact page: loading dataset from {DATA_PATH}")
 df = pd.read_csv(DATA_PATH).dropna(subset=["country"])
 df["year"] = pd.to_numeric(df["year"], errors="coerce")
 

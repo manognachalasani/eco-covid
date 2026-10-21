@@ -27,14 +27,28 @@ from src.visualizations import (
 )
 
 
+
 def _find_dataset():
-    """Find final_dataset.csv in the project root or an ancestor directory."""
+    """Find final_dataset.csv in the processed/final folder or fallback locations."""
     candidates = []
     cwd = Path.cwd().resolve()
-    candidates.extend([cwd / "final_dataset.csv", cwd.parent / "final_dataset.csv"])
 
+    # Preferred location: data/processed/final/final_dataset.csv
+    candidates.append(cwd / "data" / "processed" / "final_dataset.csv")
+
+    # Fallback locations, in case the app is launched from another directory.
+    candidates.extend([
+        cwd / "final_dataset.csv",
+        cwd.parent / "final_dataset.csv",
+    ])
+
+    # Search relative to this Python module and its ancestor directories.
     module_path = Path(__file__).resolve()
-    candidates.extend(parent / "final_dataset.csv" for parent in module_path.parents)
+    for parent in module_path.parents:
+        candidates.append(
+            parent / "data" / "processed" / "final_dataset.csv"
+        )
+        candidates.append(parent / "final_dataset.csv")
 
     seen = set()
     for candidate in candidates:
@@ -42,8 +56,11 @@ def _find_dataset():
         if candidate not in seen:
             seen.add(candidate)
             if candidate.is_file():
+                print(f"PandemiScope: loading dataset from {candidate}")
                 return candidate
+
     return None
+
 
 
 def _load_dataset():
