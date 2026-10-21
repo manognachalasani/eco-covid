@@ -8,8 +8,14 @@ from pathlib import Path
 
 
 # Load the same dataset used by the application.
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DATA_PATH = PROJECT_ROOT / "final_dataset.csv"
+from pathlib import Path
+
+DATA_PATH = (
+    Path(__file__).resolve().parents[1]
+    / "data"
+    / "processed"
+    / "final_dataset.csv"
+)
 
 if not DATA_PATH.exists():
     raise FileNotFoundError(

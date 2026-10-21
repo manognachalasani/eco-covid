@@ -18,7 +18,8 @@ TEXT, MUTED, GRID = "#f4f7ff", "#a7b2c8", "rgba(180,199,228,.12)"
 
 def load_data():
     """Load the real processed dataset from the project root."""
-    data_path = Path(__file__).resolve().parents[1] / "final_dataset.csv"
+    PROJECT_ROOT = Path(__file__).resolve().parents[1]
+    data_path = PROJECT_ROOT / "data" / "processed" / "final_dataset.csv"
 
     if not data_path.exists():
         raise FileNotFoundError(

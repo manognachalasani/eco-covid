@@ -5,110 +5,109 @@ Displays a world map with hover tooltips.
 Mock indicators will be replaced with CSV data later.
 """
 
-from dash import dcc, html
+from pathlib import Path
+
+import pandas as pd
 import plotly.graph_objects as go
+from dash import dcc, html
+
 
 
 # --------------------------------------------------
-# 1. MOCK DATA
-# Replace these values with CSV-derived indicators later.
-# All numeric values below are illustrative.
+# 1. LOAD REAL DATA FOR THE COUNTRY EXPLORER
 # --------------------------------------------------
 
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DATA_PATH = PROJECT_ROOT / "data" / "processed" / "final_dataset.csv"
 
-COUNTRY_DATA = {
-    "CAF": {
-        "name": "Central African Republic",
-        "flag": "🇨🇫",
-        "gdp_growth": "-1.0%",
-        "gdp_change": "-2.0%",
-        "unemployment": "6.2%",
-        "cases_per_million": "2,800",
-        "stringency": "55/100",
-    },
-    "CHN": {
-        "name": "China",
-        "flag": "🇨🇳",
-        "gdp_growth": "2.2%",
-        "gdp_change": "10.0%",
-        "unemployment": "5.1%",
-        "cases_per_million": "7,000",
-        "stringency": "75/100",
-    },
-    "DEU": {
-        "name": "Germany",
-        "flag": "🇩🇪",
-        "gdp_growth": "-4.1%",
-        "gdp_change": "-4.1%",
-        "unemployment": "3.8%",
-        "cases_per_million": "460,000",
-        "stringency": "65/100",
-    },
-    "GBR": {
-        "name": "United Kingdom",
-        "flag": "🇬🇧",
-        "gdp_growth": "-10.3%",
-        "gdp_change": "-10.3%",
-        "unemployment": "4.5%",
-        "cases_per_million": "365,000",
-        "stringency": "70/100",
-    },
-    "GMB": {
-        "name": "The Gambia",
-        "flag": "🇬🇲",
-        "gdp_growth": "-0.2%",
-        "gdp_change": "-0.2%",
-        "unemployment": "9.5%",
-        "cases_per_million": "4,500",
-        "stringency": "50/100",
-    },
-    "GNB": {
-        "name": "Guinea-Bissau",
-        "flag": "🇬🇼",
-        "gdp_growth": "1.5%",
-        "gdp_change": "3.0%",
-        "unemployment": "3.0%",
-        "cases_per_million": "4,000",
-        "stringency": "45/100",
-    },
-    "JPN": {
-        "name": "Japan",
-        "flag": "🇯🇵",
-        "gdp_growth": "-4.2%",
-        "gdp_change": "-4.2%",
-        "unemployment": "2.8%",
-        "cases_per_million": "270,000",
-        "stringency": "50/100",
-    },
-    "LSO": {
-        "name": "Lesotho",
-        "flag": "🇱🇸",
-        "gdp_growth": "-5.6%",
-        "gdp_change": "-5.6%",
-        "unemployment": "16.0%",
-        "cases_per_million": "16,000",
-        "stringency": "60/100",
-    },
-    "TLS": {
-        "name": "Timor-Leste",
-        "flag": "🇹🇱",
-        "gdp_growth": "-8.6%",
-        "gdp_change": "-8.6%",
-        "unemployment": "4.0%",
-        "cases_per_million": "17,000",
-        "stringency": "55/100",
-    },
-    "USA": {
-        "name": "United States",
-        "flag": "🇺🇸",
-        "gdp_growth": "-2.2%",
-        "gdp_change": "-2.2%",
-        "unemployment": "8.1%",
-        "cases_per_million": "310,000",
-        "stringency": "65/100",
-    },
+COUNTRY_FLAGS = {
+    "CAF": "🇨🇫",
+    "CHN": "🇨🇳",
+    "DEU": "🇩🇪",
+    "GBR": "🇬🇧",
+    "GMB": "🇬🇲",
+    "GNB": "🇬🇼",
+    "JPN": "🇯🇵",
+    "LSO": "🇱🇸",
+    "TLS": "🇹🇱",
+    "USA": "🇺🇸",
 }
 
+
+def display_value(value, suffix="", decimals=1):
+    """Format real values for hover tooltips; show N/A for missing data."""
+    if pd.isna(value):
+        return "N/A"
+
+    return f"{value:,.{decimals}f}{suffix}"
+
+
+def load_country_data():
+    df = pd.read_csv(DATA_PATH)
+    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    df["year"] = df["date"].dt.year
+
+    country_data = {}
+
+    for code, flag in COUNTRY_FLAGS.items():
+        country_rows = df[df["iso_code"] == code].copy()
+
+        if country_rows.empty:
+            continue
+
+        # Use 2020 for the pandemic comparison.
+        rows_2020 = country_rows[country_rows["year"] == 2020]
+
+        # GDP indicators are already defined for 2020 in the dataset.
+        gdp_growth = country_rows["gdp_growth_2020"].dropna()
+        gdp_change = country_rows["gdp_shock_2020"].dropna()
+
+        # Prefer the World Bank unemployment indicator for 2020.
+        unemployment_rows = rows_2020["wb_unemployment_rate"].dropna()
+
+        # Use the US-specific rate for the United States when available.
+        if code == "USA":
+            us_rate = rows_2020["us_unemployment_rate"].dropna()
+            if not us_rate.empty:
+                unemployment_rows = us_rate
+
+        # Cases per million are monthly values: sum the 2020 values.
+        cases = rows_2020["cases_per_million"].sum(min_count=1)
+
+        # Average the available monthly restriction scores for 2020.
+        stringency = rows_2020["stringency_index"].mean()
+
+        country_name = country_rows["country"].dropna().iloc[0]
+
+        country_data[code] = {
+            "name": country_name,
+            "flag": flag,
+            "gdp_growth": display_value(
+                gdp_growth.iloc[0] if not gdp_growth.empty else float("nan"),
+                "%",
+            ),
+            "gdp_change": display_value(
+                gdp_change.iloc[0] if not gdp_change.empty else float("nan"),
+                "%",
+            ),
+            "unemployment": display_value(
+                unemployment_rows.iloc[0]
+                if not unemployment_rows.empty
+                else float("nan"),
+                "%",
+            ),
+            "cases_per_million": display_value(cases, decimals=0),
+            "stringency": (
+                f"{stringency:.1f}/100"
+                if pd.notna(stringency)
+                else "N/A"
+            ),
+        }
+
+    return country_data
+
+
+COUNTRY_DATA = load_country_data()
 
 
 # --------------------------------------------------
@@ -157,10 +156,10 @@ def make_country_map():
 hovertemplate=(
     "<b>%{customdata[0]} &nbsp; %{customdata[1]}</b><br>"
     "<span style='color:#20cdb5'>"
-    "ECONOMIC IMPACT · DEMO DATA"
+    "ECONOMIC IMPACT · 2020"
     "</span><br><br>"
     "<b>GDP growth (2020):</b> %{customdata[2]}<br>"
-    "<b>GDP change vs 2019:</b> %{customdata[3]}<br>"
+    "<b>GDP shock indicator (2020):</b> %{customdata[3]}<br>"
     "<b>Unemployment:</b> %{customdata[4]}<br><br>"
     "<b>COVID-19 cases per million:</b> %{customdata[5]}<br>"
     "<b>Restriction stringency:</b> %{customdata[6]}"
@@ -221,6 +220,7 @@ font={
 # --------------------------------------------------
 
 
+
 def layout():
     return html.Div(
         id="pandemic-story",
@@ -255,7 +255,7 @@ def layout():
                                 className="pandemic-intro-subtitle",
                             ),
                             html.Div(
-                                className="pandemic-intro-accent-line"
+                                className="pandemic-intro-accent-line",
                             ),
                         ],
                     ),
@@ -296,136 +296,123 @@ def layout():
 
             # Data disclaimer
             html.Div(
-                className="p-container",
+                [
+                    html.Strong("DATA NOTE"),
+                    html.Span(
+                        " Indicators are drawn from the project dataset. "
+                        "Missing values are displayed as N/A."
+                    ),
+                ],
+                className="p-chart-note",
+            ),
+
+            # World map section
+            html.Section(
+                className="p-section reveal",
                 children=[
                     html.Div(
-                        className="p-demo-note reveal",
-                        children=[
-                            html.Strong("FRONTEND PREVIEW"),
-                            html.Span(
-                                "Illustrative demo values are shown until "
-                                "the final dataset is connected. These "
-                                "values should not be presented as "
-                                "historical statistics."
-                            ),
-                        ],
+                        "01 / EXPLORE THE COUNTRIES",
+                        className="p-eyebrow",
                     ),
-
-                    # World map section
-                    html.Section(
-                        className="p-section reveal",
+                    html.H2(
+                        "One pandemic. Different realities.",
+                        className="p-heading",
+                    ),
+                    html.P(
+                        "Hover over a highlighted country to "
+                        "explore its economic and COVID-19 indicators.",
+                        className="p-copy",
+                    ),
+                    html.Div(
+                        className="p-panel country-globe-panel",
                         children=[
                             html.Div(
-                                "01 / EXPLORE THE COUNTRIES",
-                                className="p-eyebrow",
-                            ),
-                            html.H2(
-                                "One pandemic. Different realities.",
-                                className="p-heading",
-                            ),
-                            html.P(
-                                "Hover over a highlighted country to "
-                                "explore its economic and COVID-19 "
-                                "indicators.",
-                                className="p-copy",
-                            ),
-
-                            html.Div(
-                                className="p-panel country-globe-panel",
+                                className="country-map-topbar",
                                 children=[
                                     html.Div(
-                                        className="country-map-topbar",
-                                        children=[
+                                        [
                                             html.Div(
-                                                [
-                                                    html.Div(
-                                                        "GLOBAL OVERVIEW",
-                                                        className="country-map-kicker",
-                                                    ),
-                                                    html.H3(
-                                                        "Explore the world",
-                                                        className="p-panel-title",
-                                                    ),
-                                                ],
-                                                className="country-map-heading",
+                                                "GLOBAL OVERVIEW",
+                                                className="country-map-kicker",
                                             ),
-                                            html.Div(
-                                                [
-                                                    html.Span(
-                                                        className="country-map-legend-dot"
-                                                    ),
-                                                    html.Span(
-                                                        "Countries in dataset"
-                                                    ),
-                                                    html.Span(
-                                                        "DEMO DATA",
-                                                        className="country-demo-label",
-                                                    ),
-                                                ],
-                                                className="country-map-legend",
+                                            html.H3(
+                                                "Explore the world",
+                                                className="p-panel-title",
                                             ),
                                         ],
+                                        className="country-map-heading",
                                     ),
-
-                                    dcc.Graph(
-                                        id="country-explorer-map",
-                                        figure=make_country_map(),
-                                        config={
-                                            "displayModeBar": False,
-                                            "scrollZoom": False,
-                                            "responsive": True,
-                                        },
-                                        className="country-map-graph",
-                                        style={
-                                            "width": "100%",
-                                            "maxWidth": "900px",
-                                            "height": "600px",
-                                            "margin": "0 auto",
-                                        },
-                                    ),
-
-                                    html.P(
-                                        "The map currently uses illustrative "
-                                        "values. Indicators will be connected "
-                                        "to the project CSV in a later step.",
-                                        className="p-chart-note",
+                                    html.Div(
+                                        [
+                                            html.Span(
+                                                className="country-map-legend-dot"
+                                            ),
+                                            html.Span("Countries in dataset"),
+                                            html.Span(
+                                                "2020 DATA",
+                                                className="country-demo-label",
+                                            ),
+                                        ],
+                                        className="country-map-legend",
                                     ),
                                 ],
+                            ),
+                            dcc.Graph(
+                                id="country-explorer-map",
+                                figure=make_country_map(),
+                                config={
+                                    "displayModeBar": False,
+                                    "scrollZoom": False,
+                                    "responsive": True,
+                                },
+                                className="country-map-graph",
+                                style={
+                                    "width": "100%",
+                                    "maxWidth": "900px",
+                                    "height": "600px",
+                                    "margin": "0 auto",
+                                },
+                            ),
+                            html.P(
+                                "Indicators are calculated from the project "
+                                "dataset. Missing or unavailable values are "
+                                "displayed as N/A.",
+                                className="p-chart-note",
                             ),
                         ],
                     ),
+                ],
+            ),
 
-                    # Closing story section
-                    html.Section(
-                        className="p-ending reveal",
-                        children=[
-                            html.Div(
-                                "COUNTRY EXPLORER — FIELD NOTES",
-                                className="p-eyebrow",
-                            ),
-                            html.H2(
-                                [
-                                    "The impact was global. ",
-                                    html.Span(
-                                        "The outcomes were not.",
-                                        className="p-accent",
-                                    ),
-                                ],
-                                className="p-ending-title",
-                            ),
-                            html.P(
-                                "Country-level indicators help reveal "
-                                "differences in economic performance, "
-                                "unemployment, reported cases, and policy "
-                                "responses. Their interpretation depends "
-                                "on the quality and context of the data.",
-                                className="p-copy",
-                            ),
-                            html.Div(
-                                "END OF COUNTRY EXPLORER",
-                                className="p-next",
+            # Closing story section
+            html.Section(
+                className="p-ending reveal",
+                children=[
+                    html.Div(
+                        "COUNTRY EXPLORER — FIELD NOTES",
+                        className="p-eyebrow",
+                    ),
+                    html.H2(
+                        [
+                            "The impact was global. ",
+                            html.Span(
+                                "The outcomes were not.",
+                                className="p-accent",
                             ),
                         ],
+                        className="p-ending-title",
+                    ),
+                    html.P(
+                        "Country-level indicators help reveal "
+                        "differences in economic performance, "
+                        "unemployment, reported cases, and policy "
+                        "responses. Their interpretation depends "
+                        "on the quality and context of the data.",
+                        className="p-copy",
+                    ),
+                    html.Div(
+                        "END OF COUNTRY EXPLORER",
+                        className="p-next",
                     ),
                 ],
             ),

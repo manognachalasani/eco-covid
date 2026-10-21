@@ -14,6 +14,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from dash import html, dcc
+from dash import dcc
 
 # Existing analysis module functions are reused where available. The page keeps
 # its own validated calculations as a safe fallback if the module is at root
@@ -29,7 +30,7 @@ from src.analysis import (
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DATA_PATH = PROJECT_ROOT / "final_dataset.csv"
+DATA_PATH = PROJECT_ROOT / "data" / "processed" / "final_dataset.csv"
 
 if not DATA_PATH.exists():
     # Support running the app with the project root as the working directory.
@@ -463,12 +464,6 @@ layout = html.Div(
                             placeholder="Our evidence suggests...\n\nThe indicators show...\n\nOne important limitation is...",
                             className="p-takeaway-input",
                         ),
-                        html.Button(
-                            "Preview my conclusion  →",
-                            id="preview-takeaway",
-                            className="p-chapter-button",
-                            n_clicks=0,
-                        ),
                         html.Div(id="takeaway-preview", className="p-takeaway-preview"),
                     ],
                 ),
@@ -487,8 +482,12 @@ layout = html.Div(
                     "after the world reopened.",
                     className="p-section-intro",
                 ),
-                html.Div("THE STORY CONTINUES", className="p-scroll"),
-            ],
+         dcc.Link(
+            "THE STORY CONTINUES →",
+            href="/",
+            className="p-scroll continue-button",
         ),
+    ],
+),
     ],
 )
