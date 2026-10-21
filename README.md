@@ -4,6 +4,8 @@
 
 Built with Python, Dash and Plotly, the project presents data through interactive visualizations and a chapter-based narrative.
 
+##ACCESS PANDEMICSCOPE NOW!!
+`https://pandemiscope-ecovid.onrender.com/ `
 ## Project Structure
 
 ```text
